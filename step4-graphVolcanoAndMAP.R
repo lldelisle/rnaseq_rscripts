@@ -133,6 +133,13 @@ if(exists("fileWithGenes")){
     if (!(colOfGeneID %in% colnames(df))) {
       cat("The first line of the gene file does not correspond to a column in the tableWithResultsOfDifferentialExpression file.\nIt will not be used.\n")
       rm(dfGene)
+    } else {
+      if(exists("colOfCircle")){
+        if(!isValidColor(colOfCircle)){
+          cat("colOfCircle cannot be interpreted by R. Go to http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf or use rgb to create a compatible color.\n No circle will be plotted around the genes in the list.\n")
+          rm(colOfCircle)
+        }
+      }
     }
   } else {
     cat("The file provided for fileWithGenes:",fileWithGenes,"does not exists. It will not be used.\n")
@@ -205,6 +212,11 @@ if(click){
   ylim(y=0,yMaxUsed) +
   geom_text_repel(data = df[idx,] ,aes(label =",geneID,"), 
        box.padding = unit(0.45, \"lines\"))")
+  if(exists("colOfCircle")){
+    cmd<-paste0(cmd,"+
+    geom_point(data=df[idx,],
+             aes(log2FoldChange, y = -log10(padj)),shape=1,col=colOfCircle)")
+  }
   if(usePng){
     png(paste0(outputFolder,"/Volcano_clicked_pretty.png"))
   } else {
@@ -224,6 +236,11 @@ if(exists("dfGene")){
   ylim(y=0,yMaxUsed) +
   geom_text_repel(data = df[df[,colOfGeneID]%in%dfGene[,1],] ,aes(label =",colOfGeneID,"), 
        box.padding = unit(0.45, \"lines\"))")
+  if(exists("colOfCircle")){
+    cmd<-paste0(cmd,"+
+    geom_point(data=df[df[,colOfGeneID]%in%dfGene[,1],],
+             aes(log2FoldChange, y = -log10(padj)),shape=1,col=colOfCircle)")
+  }
   if(usePng){
     png(paste0(outputFolder,"/Volcano_listOfGenes_pretty.png"))
   } else {
@@ -299,6 +316,11 @@ if(click){
   ylim(y=yLimUsed[1],yLimUsed[2]) +
   geom_text_repel(data = df[idx,] ,aes(label =",geneID,"), 
        box.padding = unit(0.45, \"lines\"))")
+  if(exists("colOfCircle")){
+    cmd<-paste0(cmd,"+
+    geom_point(data=df[idx,],
+             aes(baseMean,log2FoldChange),shape=1,col=colOfCircle)")
+  }
   if(usePng){
     png(paste0(outputFolder,"/MAP_clicked_pretty.png"))
   } else {
@@ -318,6 +340,11 @@ if(exists("dfGene")){
   ylim(y=yLimUsed[1],yLimUsed[2]) +
   geom_text_repel(data = df[df[,colOfGeneID]%in%dfGene[,1],] ,aes(label =",colOfGeneID,"), 
        box.padding = unit(0.45, \"lines\"))")
+  if(exists("colOfCircle")){
+    cmd<-paste0(cmd,"+
+    geom_point(data=df[df[,colOfGeneID]%in%dfGene[,1],],
+             aes(baseMean, log2FoldChange),shape=1,col=colOfCircle)")
+  }
   if(usePng){
     png(paste0(outputFolder,"/MAP_listOfGenes_pretty.png"))
   } else {
