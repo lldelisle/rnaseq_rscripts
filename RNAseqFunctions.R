@@ -8,14 +8,17 @@ mergeCounts_function<-function(samplesPlanDF){
   samplesPlanDF$htseq_count_file_exists<-sapply(samplesPlanDF$htseq_count_file,file.exists)
   
   for(i in which(!samplesPlanDF$htseq_count_file_exists)){
-    cat("The file with FPKM values for",samplesPlanDF$sample[i],":",samplesPlanDF$htseq_count_file[i],"does not exist. The sample is omitted.\n")
+    cat("The file with counts values for",samplesPlanDF$sample[i],":",samplesPlanDF$htseq_count_file[i],"does not exist. The sample is omitted.\n")
   }
 
   samplesPlanDF<-subset(samplesPlanDF,htseq_count_file_exists)
   
   #They are all merged
   for( i in 1:nrow(samplesPlanDF)){
-    NexthtseqCounts<-read.delim(samplesPlanDF$htseq_count_file[i],h=T,stringsAsFactors=F)
+    NexthtseqCounts<-read.delim(samplesPlanDF$htseq_count_file[i],h=F,stringsAsFactors=F)
+    if(ncol(NexthtseqCounts)==1){
+      NexthtseqCounts<-read.delim(samplesPlanDF$htseq_count_file[i],h=F,stringsAsFactors=F,sep=" ")
+    }
     colnames(NexthtseqCounts)<-c("Ens_ID",samplesPlanDF$sample[i])
     if(!exists("htseqCounts")){
       htseqCounts<-NexthtseqCounts
