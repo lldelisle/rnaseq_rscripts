@@ -38,6 +38,10 @@ mergeFPKM_function<-function(samplesPlanDF,sumDup=F,colToKeep=c("gene_id","gene_
   #If sumDup=F you can have different lines for one gene_id
   #If sumDup=T all the values with the same gene_id will be summed up
   #The files must be FPKM_shortName.txt in the working directory or specified in the samplesplan
+  if(!"gene_id"%in%colToKeep){
+    cat("gene_id must be part of colToKeep. It is added.\n")
+    colToKeep<-c("gene_id",colToKeep)
+  }
   
   if(!"cufflinks_file"%in%colnames(samplesPlanDF)){
     samplesPlanDF$cufflinks_file<-sapply(samplesPlanDF$sample,function(s){paste0(getwd(),"/FPKM_",s,".txt")})
@@ -64,18 +68,24 @@ mergeFPKM_function<-function(samplesPlanDF,sumDup=F,colToKeep=c("gene_id","gene_
   
   if(sumDup){
     #If sumDup is asked the lines with the same gene_id will be summed
-    simplified<-aggregate(FPKMCuff[,4:ncol(FPKMCuff)],by=list(FPKMCuff$gene_id),FUN=sum)
-    simplified<-data.frame(gene_id=simplified$Group.1,gene_short_name=FPKMCuff$gene_short_name[match(simplified$Group.1,FPKMCuff$gene_id)],
-                           locus=FPKMCuff$locus[match(simplified$Group.1,FPKMCuff$gene_id)],simplified[,2:ncol(simplified)], stringsAsFactors=FALSE)
-    #For the gene_id that were duplicated the locus is modified to take into account all transcripts
-    dup<-FPKMCuff$gene_id[duplicated((FPKMCuff$gene_id))]
-    dupFPKM<-FPKMCuff[FPKMCuff$gene_id%in%dup,c("gene_id","locus")]
-    ldup<-matrix(unlist(strsplit(unlist(strsplit(as.character(dupFPKM$locus),":")),"-")),ncol=3,byrow=T)
-    minLoc<-aggregate(as.numeric(ldup[,2]),by=list(dupFPKM$gene_id),FUN=min)
-    maxLoc<-aggregate(as.numeric(ldup[,3]),by=list(dupFPKM$gene_id),FUN=max)
-    chrLoc<-ldup[match(minLoc$Group.1,dupFPKM$gene_id),1]
-    locusToPutBack<-data.frame(ensID=minLoc$Group.1,paste(chrLoc,paste(minLoc$x,maxLoc$x[match(minLoc$Group.1,maxLoc$Group.1)],sep="-"),sep=":"), stringsAsFactors=FALSE)
-    simplified$locus[match(locusToPutBack$ensID,simplified$gene_id)]<-locusToPutBack[,2]
+    simplified<-aggregate(FPKMCuff[,grep("FPKM",colnames(FPKMCuff))],by=list(FPKMCuff$gene_id),FUN=sum,na.rm=T)
+    simplified_meta<-data.frame(gene_id=simplified$Group.1)
+    if("gene_short_name"%in%colToKeep){
+      simplified_meta<-data.frame(simplified_meta,gene_short_name=FPKMCuff$gene_short_name[match(simplified$Group.1,FPKMCuff$gene_id)])
+    }
+    if("locus"%in%colToKeep){
+      simplified_meta<-data.frame(simplified_meta,locus=FPKMCuff$locus[match(simplified$Group.1,FPKMCuff$gene_id)])
+      #For the gene_id that were duplicated the locus is modified to take into account all transcripts
+      dup<-FPKMCuff$gene_id[duplicated((FPKMCuff$gene_id))]
+      dupFPKM<-FPKMCuff[FPKMCuff$gene_id%in%dup,c("gene_id","locus")]
+      ldup<-matrix(unlist(strsplit(unlist(strsplit(as.character(dupFPKM$locus),":")),"-")),ncol=3,byrow=T)
+      minLoc<-aggregate(as.numeric(ldup[,2]),by=list(dupFPKM$gene_id),FUN=min,na.rm=T)
+      maxLoc<-aggregate(as.numeric(ldup[,3]),by=list(dupFPKM$gene_id),FUN=max,na.rm=T)
+      chrLoc<-ldup[match(minLoc$Group.1,dupFPKM$gene_id),1]
+      locusToPutBack<-data.frame(ensID=minLoc$Group.1,paste(chrLoc,paste(minLoc$x,maxLoc$x[match(minLoc$Group.1,maxLoc$Group.1)],sep="-"),sep=":"), stringsAsFactors=FALSE)
+      simplified_meta$locus[match(locusToPutBack$ensID,simplified_meta$gene_id)]<-locusToPutBack[,2]
+    }
+    simplified<-data.frame(simplified_meta,simplified[,2:ncol(simplified)])
     return(simplified)
   } else{
     return(FPKMCuff)
