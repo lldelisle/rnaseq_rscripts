@@ -45,7 +45,6 @@ cat("samplesPlanDF<-read.delim(samplesPlan)\n",file=fileWithAllCommands,append=T
 if(!("sample"%in%colnames(samplesPlanDF))){
   stop("The samplesPlan table do not contain a column called \"sample\".")
 }
-setwd(dirname(samplesPlan))
 
 if(!exists("tableWithNormalizedExpression")){
   stop("The config file do not have tableWithNormalizedExpression definition.")
@@ -57,7 +56,8 @@ cat(paste0("tableWithNormalizedExpression <- \"",tableWithNormalizedExpression,"
 
 expressionDF<-read.delim(tableWithNormalizedExpression)
 cat("expressionDF<-read.delim(tableWithNormalizedExpression)\n",file=fileWithAllCommands,append=T)
-
+metaCols<-which(sapply(colnames(expressionDF),function(cn){class(expressionDF[,cn])!="numeric"}))
+cat("metaCols<-which(sapply(colnames(expressionDF),function(cn){class(expressionDF[,cn])!=\"numeric\"}))\n",file=fileWithAllCommands,append=T)
 #Because the samples plan may contain information about samples that are not in the data we restrict the samples plan
 samplesToPlot <- intersect(colnames(expressionDF),samplesPlanDF$sample)
 cat("samplesToPlot <- intersect(colnames(expressionDF),samplesPlanDF$sample)\n",file=fileWithAllCommands,append=T)
@@ -131,8 +131,9 @@ if(exists("usePng")){
   usePng<-F
 }
 
+#The data are restricted to the samples to plot 
 data <- expressionDF[,samplesToPlot]
-#The data are restricted to the samples to plot and to non 0 values for PCA and clustering
+#and to non 0 values for PCA and clustering
 sumperline <- apply(data,1,sum)
 cat("Only genes with at least non-null expression in one sample are considered.\n")
 nonZdata <- data[sumperline != 0,]
@@ -220,7 +221,6 @@ if(exists("nbOfPC")){
         #####
         #Plot PCs 2 per 2:
         if(exists("PCA2D")){
-          PCA2D<-checkedPCA2D(PCA2D,factorizedSP)
           param<-getStringFromListAndSP(PCA2D,colnames(factorizedSP),possibleValues=c("fill","alpha","color","shape"))
           if(nchar(param)>0){
             param<-paste0("aes(",param,")")
@@ -228,7 +228,7 @@ if(exists("nbOfPC")){
               param<-paste0(param,", shape=21, stroke=2")
             } else if(grepl("fill",param)){
               param<-paste0(param,", stroke=2")
-              additionalParam<-paste0("+ scale_shape_manual(values=21:",20+min(5,length(levels(factorizedSP[,PCA2D$shape]))),") +
+              additionalParam<-paste0("+ scale_shape_manual(values=21:",20+length(levels(factorizedSP[,PCA2D$shape])),") +
               guides(fill=guide_legend(override.aes = list(shape = 21)),alpha=guide_legend(override.aes = list(shape = 21)), color=guide_legend(override.aes = list(shape = 21)))")
             }
           }
@@ -279,11 +279,11 @@ ylab(paste0(\\\"PC\",j,\": \\\",var[\",j,\"],\\\"% variance\\\"))\")\n", file=fi
       if(exists("getGeneContributionToPCA")){
         if(is.logical(getGeneContributionToPCA)){
           if(getGeneContributionToPCA){
-            pcaDF<-cbind(expressionDF[rownames(sample.pca$rotation),setdiff(colnames(expressionDF),samplesToPlot)],sample.pca$rotation*sample.pca$rotation)
+            pcaDF<-cbind(expressionDF[rownames(sample.pca$rotation),metaCols],sample.pca$rotation*sample.pca$rotation)
             write.table(pcaDF,paste0(outputFolder,"/geneContributionToPCA.txt"),sep = "\t",row.names = F,quote=F)
             cat("The table with gene contribution is written in ",outputFolder,"/geneContributionToPCA.txt.\n")
             
-            cat("pcaDF<-cbind(expressionDF[rownames(sample.pca$rotation),setdiff(colnames(expressionDF),samplesToPlot)],sample.pca$rotation*sample.pca$rotation)
+            cat("pcaDF<-cbind(expressionDF[rownames(sample.pca$rotation),metaCols],sample.pca$rotation*sample.pca$rotation)
 write.table(pcaDF,paste0(outputFolder,\"/geneContributionToPCA.txt\"),sep = \"\\t\",row.names = F,quote=F)\n", file=fileWithAllCommands,append=T)
           }
         } else {
