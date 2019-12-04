@@ -210,6 +210,7 @@ getStringFromListAndSP<-function(listOfPara,possibleFactors,possibleValues){
   if(length(setdiff(names(listOfPara),possibleValues))>0){
     cat("The parameters ",setdiff(names(listOfPara),possibleValues)," are not usable in this plot.\n")
   }
+  
   return(param)
 }
 
@@ -229,4 +230,27 @@ isValidColor <- function(colorname){
     }
   }
   return(FALSE)
+}
+
+checkedPCA2D<-function(listOfPara,samplesPlan){
+  #First, check fill is only used when color is already used
+  if("fill"%in%names(listOfPara) && !"color"%in%names(listOfPara)){
+    cat("fill should be used for PCA2D only when color is already used.\n")
+    names(listOfPara)<-gsub("fill","color",names(listOfPara))
+  }
+  #Second, check fill and color are not both used for the same factor
+  if(all(c("fill","color")%in%names(listOfPara))){
+    if(listOfPara$fill==listOfPara$color){
+      cat("It is useless to put both fill and color for the same factor, put only color.\n")
+      listOfPara$fill<-NULL
+    } else {
+      #Third if both are used check that the number of factors for shape is less than 5:
+      if("shape"%in%names(listOfPara)){
+        nbShape<-tryCatch(length(levels(samplesPlan[,listOfPara$shape])),error=function(e){0})
+        if(nbShape>5){
+          cat("It is not possible to use more than 5 different shapes with both fill and color. Some",listOfPara$shape," will be redundant.\n")
+        }
+      }
+    }
+  }
 }

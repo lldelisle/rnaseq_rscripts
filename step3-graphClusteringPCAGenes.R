@@ -131,6 +131,14 @@ if(exists("usePng")){
   usePng<-F
 }
 
+if(exists("fixedColors")){
+  fixedColors<-checkedFixedColors(fixedColors,factorizedSP)
+  cat("fixedColors<-",stringFromListOfNamedVec(fixedColors),"\n", file=fileWithAllCommands,append=T)
+} else {
+  fixedColors<-NULL
+  cat("fixedColors<-NULL")
+}
+
 #The data are restricted to the samples to plot 
 data <- expressionDF[,samplesToPlot]
 #and to non 0 values for PCA and clustering
@@ -181,11 +189,13 @@ if(exists("nbOfPC")){
       #Plot one PC per one PC:
       if(exists("PCA1D")){
         param<-paste0(getStringFromListAndSP(PCA1D,colnames(factorizedSP),possibleValues=c("fill","alpha","color","linetype")),")")
+        addParam<-gsub("proposedColors","fixedColors",getAddPara(PCA1D,fixedColors))
         if(!grepl("color",param) && grepl("linetype",param)){
           param<-paste0(param,", color=\"black\"")
         }
       } else {
         param<-")"
+        addParam<-""
       }
       pdfSize<-max(7,6+0.12*nSamples)
       pngSize<-max(500,358+9*nSamples)
@@ -199,7 +209,7 @@ if(exists("nbOfPC")){
                       geom_bar(aes(weight=PC",i,param,",size=1.5) +
                       theme_grey(base_size = 20) +
                       theme(axis.text.x  = element_text(angle=90,vjust=0.5,hjust=1)) +
-                      ylab(paste0(\"PC",i,": \",var[",i,"],\"% variance\"))")
+                      ylab(paste0(\"PC",i,": \",var[",i,"],\"% variance\"))",addParam)
         print(eval(parse(text = cmd)))
         dev.off()
       }
@@ -213,7 +223,7 @@ if(exists("nbOfPC")){
                       geom_bar(aes(weight=PC\",i,\"",gsub("\\\"","\\\\\"",param),",size=1.5) +
                       theme_grey(base_size = 20) +
                       theme(axis.text.x  = element_text(angle=90,vjust=0.5,hjust=1)) +
-                      ylab(paste0(\\\"PC\",i,\": \\\",var[\",i,\"],\\\"% variance\\\"))\")\n", file=fileWithAllCommands,append=T)
+                      ylab(paste0(\\\"PC\",i,\": \\\",var[\",i,\"],\\\"% variance\\\"))",gsub("\\\"","\\\\\"",addParam),"\")\n", file=fileWithAllCommands,append=T)
       cat("print(eval(parse(text = cmd)))\n", file=fileWithAllCommands,append=T)
       cat("dev.off()\n", file=fileWithAllCommands,append=T)                      
       cat("}\n", file=fileWithAllCommands,append=T)
@@ -221,19 +231,22 @@ if(exists("nbOfPC")){
         #####
         #Plot PCs 2 per 2:
         if(exists("PCA2D")){
+          PCA2D<-checkedPCA2D(PCA2D,factorizedSP)
           param<-getStringFromListAndSP(PCA2D,colnames(factorizedSP),possibleValues=c("fill","alpha","color","shape"))
+          addParam<-gsub("proposedColors","fixedColors",getAddPara(PCA2D,fixedColors))
           if(nchar(param)>0){
             param<-paste0("aes(",param,")")
             if(!grepl("shape",param) && grepl("fill",param)){
               param<-paste0(param,", shape=21, stroke=2")
             } else if(grepl("fill",param)){
               param<-paste0(param,", stroke=2")
-              additionalParam<-paste0("+ scale_shape_manual(values=21:",20+length(levels(factorizedSP[,PCA2D$shape])),") +
-              guides(fill=guide_legend(override.aes = list(shape = 21)),alpha=guide_legend(override.aes = list(shape = 21)), color=guide_legend(override.aes = list(shape = 21)))")
+              addParam<-paste0(addParam,"+\n scale_shape_manual(values=c(",paste(rep(21:25,length.out=length(levels(factorizedSP[,PCA2D$shape]))),collapse = ","),")) +
+guides(fill=guide_legend(override.aes = list(shape = 21)),alpha=guide_legend(override.aes = list(shape = 21)), color=guide_legend(override.aes = list(shape = 21)))")
             }
           }
         } else {
           param<-""
+          addParam<-""
         }
         pdfSize<-max(7,6.7+0.035*nSamples)
         pngSize<-max(480,460+2.4*nSamples)
@@ -248,10 +261,7 @@ if(exists("nbOfPC")){
                           geom_point(",param,",size=3) +
                           theme_grey(base_size = 20) +
                           xlab(paste0(\"PC",i,": \",var[",i,"],\"% variance\"))+
-                          ylab(paste0(\"PC",j,": \",var[",j,"],\"% variance\"))")
-            if(exists("additionalParam")){
-              cmd<-paste0(cmd,additionalParam)
-            }
+                          ylab(paste0(\"PC",j,": \",var[",j,"],\"% variance\"))",addParam)
             print(eval(parse(text = cmd)))
             dev.off()
           }
@@ -267,10 +277,7 @@ if(exists("nbOfPC")){
 geom_point(",gsub("\\\"","\\\\\"",param),",size=3) +
 theme_grey(base_size = 20) +
 xlab(paste0(\\\"PC\",i,\": \\\",var[\",i,\"],\\\"% variance\\\"))+
-ylab(paste0(\\\"PC\",j,\": \\\",var[\",j,\"],\\\"% variance\\\"))\")\n", file=fileWithAllCommands,append=T)
-        if(exists("additionalParam")){
-          cat("cmd<-paste0(cmd,\"",gsub("\\\"","\\\\\"",additionalParam),"\")\n", file=fileWithAllCommands,append=T)
-        }
+ylab(paste0(\\\"PC\",j,\": \\\",var[\",j,\"],\\\"% variance\\\"))",gsub("\\\"","\\\\\"",addParam),"\")\n", file=fileWithAllCommands,append=T)
         cat("print(eval(parse(text = cmd)))\n", file=fileWithAllCommands,append=T)
         cat("dev.off()\n", file=fileWithAllCommands,append=T)                      
         cat("}\n", file=fileWithAllCommands,append=T)                    
@@ -281,7 +288,7 @@ ylab(paste0(\\\"PC\",j,\": \\\",var[\",j,\"],\\\"% variance\\\"))\")\n", file=fi
           if(getGeneContributionToPCA){
             pcaDF<-cbind(expressionDF[rownames(sample.pca$rotation),metaCols],sample.pca$rotation*sample.pca$rotation)
             write.table(pcaDF,paste0(outputFolder,"/geneContributionToPCA.txt"),sep = "\t",row.names = F,quote=F)
-            cat("The table with gene contribution is written in ",outputFolder,"/geneContributionToPCA.txt.\n")
+            cat("The table with gene contribution is written in ",outputFolder,"/geneContributionToPCA.txt.\n",sep = "")
             
             cat("pcaDF<-cbind(expressionDF[rownames(sample.pca$rotation),metaCols],sample.pca$rotation*sample.pca$rotation)
 write.table(pcaDF,paste0(outputFolder,\"/geneContributionToPCA.txt\"),sep = \"\\t\",row.names = F,quote=F)\n", file=fileWithAllCommands,append=T)
@@ -356,6 +363,7 @@ rownames(annot) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
         cellwidth = 10,
         cellheight = 10,
         annotation = annot,
+        annotation_colors = fixedColors,
         main="Euclidean distance - complete clustering",
         clustering_method="complete",
         col = colors
@@ -367,10 +375,11 @@ rownames(annot) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
         cellwidth = 10,
         cellheight = 10,
         annotation = annot,
+        annotation_colors = fixedColors,
         main=\"Euclidean distance - complete clustering\",
         col = colors,
         clustering_method=\"complete\"
-)", file=fileWithAllCommands,append=T)
+)\n", file=fileWithAllCommands,append=T)
       if(usePng){
         dev.off()
         png(paste0(outputFolder,"/CorrelationMatrix_EuclWard.png"),width=pngSize,height=pngSize)
@@ -384,6 +393,7 @@ rownames(annot) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
         cellwidth = 10,
         cellheight = 10,
         annotation = annot,
+        annotation_colors = fixedColors,
         main="Euclidean distance - ward clustering",
         clustering_method="ward.D2",
         col = colors
@@ -395,10 +405,11 @@ rownames(annot) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
         cellwidth = 10,
         cellheight = 10,
         annotation = annot,
+        annotation_colors = fixedColors,
         main=\"Euclidean distance - ward clustering\",
         clustering_method=\"ward.D2\",
         col = colors
-)", file=fileWithAllCommands,append=T)
+)\n", file=fileWithAllCommands,append=T)
       if(usePng){
         dev.off()
         png(paste0(outputFolder,"/CorrelationMatrix_SpearWard.png"),width=pngSize,height=pngSize)
@@ -412,6 +423,7 @@ rownames(annot) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
         cellwidth = 10,
         cellheight = 10,
         annotation = annot,
+        annotation_colors = fixedColors,
         main="1-spearmanCor - ward clustering",
         clustering_method="ward.D2",
         col = colors
@@ -424,6 +436,7 @@ rownames(annot) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
         cellwidth = 10,
         cellheight = 10,
         annotation = annot,
+        annotation_colors = fixedColors,
         main=\"1-spearmanCor - ward clustering\",
         clustering_method=\"ward.D2\",
         col = colors
@@ -491,194 +504,215 @@ if(exists("fileWithGenes")){
       dataToPlot<-log2(1+data)
       cat("dataToPlot<-log2(1+data)\n", file=fileWithAllCommands,append=T)
     }
-    #Set the parameters:
-    additionalParam<-""
-    if(exists("plotGenesPara")){
-      param<-getStringFromListAndSP(plotGenesPara,colnames(factorizedSP),possibleValues=c("fill","alpha","color","shape"))
-      if(nchar(param)>0){
-        param<-paste0("aes(",param,")")
-        if(!grepl("shape",param) && grepl("fill",param)){
-          param<-paste0(param,", shape=21, stroke=2")
-        } else if(grepl("fill",param)){
-          param<-paste0(param,", stroke=2")
-          additionalParam<-paste0("+ scale_shape_manual(values=21:",20+length(levels(factorizedSP[,PCA2D$shape])),") +
-          guides(fill=guide_legend(override.aes = list(shape = 21)),alpha=guide_legend(override.aes = list(shape = 21)), color=guide_legend(override.aes = list(shape = 21)))")
-        }
+    if(exists("doNotPlotGeneByGene")){
+      if(!is.logical(doNotPlotGeneByGene)){
+        cat("doNotPlotGeneByGene is not logical. Each gene will be plotted.\n")
+        doNotPlotGeneByGene<-F
       }
     } else {
-      param<-""
-      plotGenesPara<-list()
-    }    
-    #Set all additional parameters:
-    #y lim
-    if(exists("useSameYmaxForAllGenes")){
-      if(is.logical(useSameYmaxForAllGenes)){
-        if(useSameYmaxForAllGenes){
-          additionalParam<-paste0(additionalParam,"+ expand_limits(y=c(0,",max(dataToPlot[expressionDF[,colOfGeneID]%in%dfGene[,1],]),"))")
+      doNotPlotGeneByGene<-F
+    }
+    if(!doNotPlotGeneByGene){
+      #Set the parameters:
+      if(exists("plotGenesPara")){
+        param<-getStringFromListAndSP(plotGenesPara,colnames(factorizedSP),possibleValues=c("fill","alpha","color","shape"))
+        additionalParam<-gsub("proposedColors","fixedColors",getAddPara(plotGenesPara,fixedColors))
+        if(nchar(param)>0){
+          param<-paste0("aes(",param,")")
+          if(!grepl("shape",param) && grepl("fill",param)){
+            param<-paste0(param,", shape=21, stroke=2")
+          } else if(grepl("fill",param)){
+            param<-paste0(param,", stroke=2")
+            additionalParam<-paste0(additionalParam,"+ scale_shape_manual(values=c(",paste(rep(21:25,length.out=length(levels(factorizedSP[,plotGenesPara$shape]))),collapse = ","),")) +
+          guides(fill=guide_legend(override.aes = list(shape = 21)),alpha=guide_legend(override.aes = list(shape = 21)), color=guide_legend(override.aes = list(shape = 21)))")
+          }
+        }
+      } else {
+        param<-""
+        additionalParam<-""
+        plotGenesPara<-list()
+      }    
+      #Set all additional parameters:
+      #y lim
+      if(exists("useSameYmaxForAllGenes")){
+        if(is.logical(useSameYmaxForAllGenes)){
+          if(useSameYmaxForAllGenes){
+            additionalParam<-paste0(additionalParam,"+ expand_limits(y=c(0,",max(dataToPlot[expressionDF[,colOfGeneID]%in%dfGene[,1],]),"))")
+          } else {
+            additionalParam<-paste0(additionalParam,"+ expand_limits(y=0)")
+          }
         } else {
+          cat("useSameYmaxForAllGenes is not logical. Will be set to F.\n")
           additionalParam<-paste0(additionalParam,"+ expand_limits(y=0)")
         }
       } else {
-        cat("useSameYmaxForAllGenes is not logical. Will be set to F.\n")
         additionalParam<-paste0(additionalParam,"+ expand_limits(y=0)")
       }
-    } else {
-      additionalParam<-paste0(additionalParam,"+ expand_limits(y=0)")
-    }
-    #x label if too numerous:
-    nbXvalues<-length(levels(factorizedSP[,xaxisForGenes]))
-    if(nbXvalues>4){
-      additionalParam<-paste0(additionalParam,"+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))")
-    }
-    library("ggplot2")
-    cat("library(ggplot2)\n", file=fileWithAllCommands,append=T)
-    pdfSize<-max(7,6.5+0.12*nbXvalues)
-    pngSize<-max(480,445+5*nbXvalues)
-    for (i in 1:nrow(dfGene)) {
-      # for each gene in the fg file the ggplot command line is applied and the plot is stored in a file in the directory of the gene list.
-      geneID <- dfGene[i,1]
-      if (geneID %in% expressionDF[,colOfGeneID]) {
-        cat("plotting",geneID,"\n")
-        subdf <- dataToPlot[expressionDF[,colOfGeneID] == geneID,]
-        if(nrow(subdf)>1){
-          cat("Warning: there is more than one line with the ID:",geneID,"in the file with expression values.\nThe first one will be plotted.\n")
-        }
-        new.df <- cbind(factorizedSP,t(subdf[1,]))
-        colnames(new.df)[ncol(new.df)]<-"y"
-        if(exists("geneIDToAdd")){
-          geneLabel<-expressionDF[expressionDF[,colOfGeneID]==geneID,geneIDToAdd][1]
-          titleToPut<-paste(geneID,geneLabel,sep="-")
-        } else{
-          titleToPut<-geneID
-        }
-        if(usePng){
-          png(paste0(outputFolder,"/",xaxisForGenes,"-",titleToPut,".png"),width=pngSize,height=pngSize)
-        } else {
-          pdf(paste0(outputFolder,"/",xaxisForGenes,"-",titleToPut,".pdf"),title=paste0(xaxisForGenes,"-",titleToPut),width=pdfSize,height=pdfSize)
-        }
-        cmd<-paste0("ggplot(new.df, aes(",xaxisForGenes,",y)) +
+      #x label if too numerous:
+      nbXvalues<-length(levels(factorizedSP[,xaxisForGenes]))
+      if(nbXvalues>4){
+        additionalParam<-paste0(additionalParam,"+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))")
+      }
+      library("ggplot2")
+      cat("library(ggplot2)\n", file=fileWithAllCommands,append=T)
+      pdfSize<-max(7,6.5+0.12*nbXvalues)
+      pngSize<-max(480,445+5*nbXvalues)
+      cat("plotting ")
+      for (i in 1:nrow(dfGene)) {
+        # for each gene in the fg file the ggplot command line is applied and the plot is stored in a file in the directory of the gene list.
+        geneID <- dfGene[i,1]
+        if (geneID %in% expressionDF[,colOfGeneID]) {
+          cat(geneID,",")
+          subdf <- dataToPlot[expressionDF[,colOfGeneID] == geneID,]
+          if(nrow(subdf)>1){
+            cat("\nWarning: there is more than one line with the ID:",geneID,"in the file with expression values.\nThe first one will be plotted.\n")
+            print(expressionDF[expressionDF[,colOfGeneID] == geneID,metaCols])
+          }
+          new.df <- cbind(factorizedSP,t(subdf[1,]))
+          colnames(new.df)[ncol(new.df)]<-"y"
+          if(exists("geneIDToAdd")){
+            geneLabel<-expressionDF[expressionDF[,colOfGeneID]==geneID,geneIDToAdd][1]
+            titleToPut<-paste(geneID,geneLabel,sep="-")
+          } else{
+            titleToPut<-geneID
+          }
+          if(usePng){
+            png(paste0(outputFolder,"/",xaxisForGenes,"-",titleToPut,".png"),width=pngSize,height=pngSize)
+          } else {
+            pdf(paste0(outputFolder,"/",xaxisForGenes,"-",titleToPut,".pdf"),title=paste0(xaxisForGenes,"-",titleToPut),width=pdfSize,height=pdfSize)
+          }
+          cmd<-paste0("ggplot(new.df, aes(",xaxisForGenes,",y)) +
                       geom_point(",param,",size=3)  +
                       labs(title = titleToPut) +
                       theme_grey(base_size = 20) +
                       ylab(\"",ylab,"\")",additionalParam)
-        print(eval(parse(text = cmd)))
-        dev.off()
-      } else{
-        cat(paste(geneID,"is not in the file with expression values.\n"))
+          print(eval(parse(text = cmd)))
+          dev.off()
+        } else{
+          cat(paste(geneID,"is not in the file with expression values.\n"))
+        }
       }
-    }
-    cat("for (i in 1:nrow(dfGene)) {
+      cat("\n")
+      cat("for (i in 1:nrow(dfGene)) {
 geneID <- dfGene[i,1]
 if (geneID %in% expressionDF[,colOfGeneID]) {
 subdf <- dataToPlot[expressionDF[,colOfGeneID] == geneID,]
 new.df <- cbind(factorizedSP,t(subdf[1,]))
 colnames(new.df)[ncol(new.df)]<-\"y\"\n", file=fileWithAllCommands,append=T)
-    if(exists("geneIDToAdd")){
-      cat("geneLabel<-expressionDF[expressionDF[,colOfGeneID]==geneID,geneIDToAdd][1]
+      if(exists("geneIDToAdd")){
+        cat("geneLabel<-expressionDF[expressionDF[,colOfGeneID]==geneID,geneIDToAdd][1]
           titleToPut<-paste(geneID,geneLabel,sep=\"-\")\n", file=fileWithAllCommands,append=T)
-    } else{
-      cat("titleToPut<-geneID\n", file=fileWithAllCommands,append=T)
-    }
-    if(usePng){
-      cat(paste0("png(paste0(outputFolder,\"/",xaxisForGenes,"-\",titleToPut,\".png\"),width=",pngSize,",height=",pngSize,")\n"), file=fileWithAllCommands,append=T)
-    } else {
-      cat(paste0("pdf(paste0(outputFolder,\"/",xaxisForGenes,"-\",titleToPut,\".pdf\"),title=paste0(\"",xaxisForGenes,"-\",titleToPut),width=",pdfSize,",height=",pdfSize,")\n"), file=fileWithAllCommands,append=T)
-    }
-    cat("cmd<-\"ggplot(new.df, aes(",xaxisForGenes,",y)) +
+      } else{
+        cat("titleToPut<-geneID\n", file=fileWithAllCommands,append=T)
+      }
+      if(usePng){
+        cat(paste0("png(paste0(outputFolder,\"/",xaxisForGenes,"-\",titleToPut,\".png\"),width=",pngSize,",height=",pngSize,")\n"), file=fileWithAllCommands,append=T)
+      } else {
+        cat(paste0("pdf(paste0(outputFolder,\"/",xaxisForGenes,"-\",titleToPut,\".pdf\"),title=paste0(\"",xaxisForGenes,"-\",titleToPut),width=",pdfSize,",height=",pdfSize,")\n"), file=fileWithAllCommands,append=T)
+      }
+      cat("cmd<-\"ggplot(new.df, aes(",xaxisForGenes,",y)) +
 geom_point(",gsub("\\\"","\\\\\"",param),",size=3)  +
 labs(title = titleToPut) +
 theme_grey(base_size = 20) +
 ",paste0("ylab(\\\"",ylab,"\\\")"),gsub("\\\"","\\\\\"",additionalParam),"\"\n", file=fileWithAllCommands,append=T)
-    cat("print(eval(parse(text = cmd)))
+      cat("print(eval(parse(text = cmd)))
 dev.off()
 }
-}\n", file=fileWithAllCommands,append=T)   
-    if(exists("addGlobalHeatmap")){
-      if(is.logical(addGlobalHeatmap)){
-        if(addGlobalHeatmap){
-          if(exists("keepGeneOrder")){
-            if(!is.logical(keepGeneOrder)){
-              cat("keepGeneOrder is not logical. It will be set to F.\n")
-              keepGeneOrder<-F
-            }
-          } else {
+}\n", file=fileWithAllCommands,append=T)  
+  }
+  if(exists("addGlobalHeatmap")){
+    if(is.logical(addGlobalHeatmap)){
+      if(addGlobalHeatmap){
+        if(exists("keepGeneOrder")){
+          if(!is.logical(keepGeneOrder)){
+            cat("keepGeneOrder is not logical. It will be set to F.\n")
             keepGeneOrder<-F
           }
-          if(exists("clusterSamples")){
-            if(!is.logical(clusterSamples)){
-              cat("clusterSamples is not logical. It will be set to F.\n")
-              clusterSamples<-F
-            }
-          } else {
+        } else {
+          keepGeneOrder<-F
+        }
+        if(exists("clusterSamples")){
+          if(!is.logical(clusterSamples)){
+            cat("clusterSamples is not logical. It will be set to F.\n")
             clusterSamples<-F
           }
-          library("pheatmap")
-          cols<-unique(which(colnames(factorizedSP)%in%c(xaxisForGenes,unlist(plotGenesPara))))
-          cat("library(pheatmap)
+        } else {
+          clusterSamples<-F
+        }
+        library("pheatmap")
+        cols<-unique(which(colnames(factorizedSP)%in%c(xaxisForGenes,unlist(plotGenesPara))))
+        cat("library(pheatmap)
         cols<-c(",paste(cols,collapse=","),")\n", file=fileWithAllCommands,append=T)
-          if (length(cols) == 1) {
-            annotForHM <- data.frame(factorizedSP[,cols])
-            colnames(annotForHM) <- colnames(factorizedSP)[cols]
-            rownames(annotForHM) <- samplesToPlot
-            cat("annotForHM <- data.frame(factorizedSP[,cols])
+        if (length(cols) == 1) {
+          annotForHM <- data.frame(factorizedSP[,cols])
+          colnames(annotForHM) <- colnames(factorizedSP)[cols]
+          rownames(annotForHM) <- samplesToPlot
+          cat("annotForHM <- data.frame(factorizedSP[,cols])
 colnames(annotForHM) <- colnames(factorizedSP)[cols]
 rownames(annotForHM) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
-          } else if(length(cols)>1) {
-            annotForHM<-factorizedSP[,cols]
-            cat("annotForHM<-factorizedSP[,cols]\n", file=fileWithAllCommands,append=T)
-          }
-          if(exists("geneIDToAdd")){
-            colWithName<-geneIDToAdd
-            cat("colWithName<-geneIDToAdd\n", file=fileWithAllCommands,append=T)
-          } else{
-            colWithName<-colOfGeneID
-            cat("colWithName<-colOfGeneID\n", file=fileWithAllCommands,append=T)
-          }
-          pdfSize<-max(7,5+0.15*nSamples)
-          pngSize<-max(480,237+12*nSamples)
-          if(usePng){
-            png(paste0(outputFolder,"/HeatmapWithGenes.png"),width=pngSize,height=500+17*nrow(dfGene))
-            cat("png(paste0(outputFolder,\"/HeatmapWithGenes.png\"),width=",pngSize,",height=",500+17*nrow(dfGene),")\n", file=fileWithAllCommands,append=T)
-          } else {
-            pdf(paste0(outputFolder,"/HeatmapWithGenes.pdf"),title="HeatmapWithGenes",onefile = TRUE,width=pdfSize,height=5+0.22*nrow(dfGene))
-            cat("pdf(paste0(outputFolder,\"/HeatmapWithGenes.pdf\"),title=\"HeatmapWithGenes\",onefile = TRUE,width=",pdfSize,",height=",5+0.22*nrow(dfGene),")\n", file=fileWithAllCommands,append=T)
-          }
-          epsilon=0.0000001
-          df.sub<-dataToPlot[match(dfGene[,1],expressionDF[,colOfGeneID]),]
-          if(useLogExpression){
-            breaksListAbs<-c(seq(0,12,length.out = 100),max(max(df.sub),12)+epsilon)
-          } else {
-            breaksListAbs<-c(seq(0,max(df.sub),length.out = 100),max(df.sub)+epsilon)
-          }
-          pheatmap(df.sub,
-                   labels_row=expressionDF[match(dfGene[,1],expressionDF[,colOfGeneID]),colWithName],
-                   cluster_rows=!keepGeneOrder,
-                   cluster_cols=clusterSamples,
-                   annotation=annotForHM,
-                   breaks = breaksListAbs,
-                   cellheight = 16)
-          dev.off()
-          cat("epsilon=0.0000001
+        } else if(length(cols)>1) {
+          annotForHM<-factorizedSP[,cols]
+          cat("annotForHM<-factorizedSP[,cols]\n", file=fileWithAllCommands,append=T)
+        }
+        if(exists("geneIDToAdd")){
+          colWithName<-geneIDToAdd
+          cat("colWithName<-geneIDToAdd\n", file=fileWithAllCommands,append=T)
+        } else{
+          colWithName<-colOfGeneID
+          cat("colWithName<-colOfGeneID\n", file=fileWithAllCommands,append=T)
+        }
+        pdfSize<-max(7,5+0.15*nSamples)
+        pngSize<-max(480,237+12*nSamples)
+        if(usePng){
+          png(paste0(outputFolder,"/HeatmapWithGenes.png"),width=pngSize,height=500+17*nrow(dfGene))
+          cat("png(paste0(outputFolder,\"/HeatmapWithGenes.png\"),width=",pngSize,",height=",500+17*nrow(dfGene),")\n", file=fileWithAllCommands,append=T)
+        } else {
+          pdf(paste0(outputFolder,"/HeatmapWithGenes.pdf"),title="HeatmapWithGenes",onefile = TRUE,width=pdfSize,height=5+0.22*nrow(dfGene))
+          cat("pdf(paste0(outputFolder,\"/HeatmapWithGenes.pdf\"),title=\"HeatmapWithGenes\",onefile = TRUE,width=",pdfSize,",height=",5+0.22*nrow(dfGene),")\n", file=fileWithAllCommands,append=T)
+        }
+        epsilon=0.0000001
+        df.sub<-dataToPlot[match(dfGene[,1],expressionDF[,colOfGeneID]),]
+        if(anyDuplicated(expressionDF[expressionDF[,colOfGeneID]%in%dfGene[,1],colOfGeneID])>0){
+          cat("Warning: at least one gene id in the file correspond to multiple rows in the expression file.\n Only the first row with the good gene id will be used.\n")
+        }
+        if(useLogExpression){
+          breaksListAbs<-c(seq(0,12,length.out = 100),max(max(df.sub),12)+epsilon)
+        } else {
+          breaksListAbs<-c(seq(0,max(df.sub),length.out = 100),max(df.sub)+epsilon)
+        }
+        pheatmap(df.sub,
+                 labels_row=expressionDF[match(dfGene[,1],expressionDF[,colOfGeneID]),colWithName],
+                 cluster_rows=!keepGeneOrder,
+                 cluster_cols=clusterSamples,
+                 annotation=annotForHM,
+                 annotation_colors = fixedColors,
+                 breaks = breaksListAbs,
+                 main=ylab,
+                 cellheight = 16)
+        dev.off()
+        cat("epsilon=0.0000001
           df.sub<-dataToPlot[match(dfGene[,1],expressionDF[,colOfGeneID]),]\n", file=fileWithAllCommands,append=T)
-          if(useLogExpression){
-            cat("breaksListAbs<-c(seq(0,12,length.out = 100),max(max(df.sub),12)+epsilon)\n", file=fileWithAllCommands,append=T)
-          } else {
-            cat("breaksListAbs<-c(seq(0,max(df.sub),length.out = 100),max(df.sub)+epsilon)\n", file=fileWithAllCommands,append=T)
-          }
-          cat("pheatmap(df.sub,
+        if(useLogExpression){
+          cat("breaksListAbs<-c(seq(0,12,length.out = 100),max(max(df.sub),12)+epsilon)\n", file=fileWithAllCommands,append=T)
+        } else {
+          cat("breaksListAbs<-c(seq(0,max(df.sub),length.out = 100),max(df.sub)+epsilon)\n", file=fileWithAllCommands,append=T)
+        }
+        cat("pheatmap(df.sub,
                    labels_row=expressionDF[match(dfGene[,1],expressionDF[,colOfGeneID]),colWithName],
                    cluster_rows=",!keepGeneOrder,",
                    cluster_cols=",clusterSamples,",
                    annotation=annotForHM,
+                   annotation_colors = fixedColors,
                    breaks = breaksListAbs,
+                   main=\"",ylab,"\",
                    cellheight = 16)
           dev.off()\n", file=fileWithAllCommands,append=T)
-          
-        }
-      } else {
-        cat("addGlobalHeatmap is not logical. No heatmap will be plotted.\n")
+        
       }
+    } else {
+      cat("addGlobalHeatmap is not logical. No heatmap will be plotted.\n")
     }
+  }
   } else {
     cat("The file provided as fileWithGenes does not exists.\n")
   }
