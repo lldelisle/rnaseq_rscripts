@@ -263,8 +263,8 @@ if(usePng){
 }
 #the first plot is drawn with all points (MAP plot is log2FC=f(meanExpression))
 plot(
-  df$baseMean,df$log2FoldChange,pch = 16,col = colorDots,cex = 0.5,
-  xlab = "Mean counts",ylab = "log2 Fold Change"
+  log2(1+df$baseMean),df$log2FoldChange,pch = 16,col = colorDots,cex = 0.5,
+  xlab = "log2(1+Mean counts)",ylab = "log2 Fold Change"
 )
 yLimUsed<-par('usr')[3:4]
 dev.off()
@@ -279,9 +279,9 @@ if(exists("ylimMAP")){
         pdf(paste0(outputFolder,"/MAP_subset.pdf"),title="MAP_subset")
       }
       plot(
-        df$baseMean,df$log2FoldChange,pch = 16,col = colorDots,cex = 0.5,
+        log2(1+df$baseMean),df$log2FoldChange,pch = 16,col = colorDots,cex = 0.5,
         ylim = ylimMAP,
-        xlab = "Mean counts",ylab = "log2 Fold Change"
+        xlab = "log2(1+Mean counts)",ylab = "log2 Fold Change"
       )
       dev.off()
       yLimUsed<-ylimMAP
@@ -291,13 +291,13 @@ if(exists("ylimMAP")){
 
 if(click){
   plot(
-    df$baseMean,df$log2FoldChange,pch = 16,col = colorDots,cex = 0.5,
+    log2(1+df$baseMean),df$log2FoldChange,pch = 16,col = colorDots,cex = 0.5,
     ylim = yLimUsed,
-    xlab = "Mean counts",ylab = "log2 Fold Change"
+    xlab = "log2(1+Mean counts)",ylab = "log2 Fold Change"
   )
   cat("Click on points to print the name of the gene.\nClick on ESC to stop selecting points.\n")
   idx <-
-    identify(df$baseMean,df$log2FoldChange, labels = df[,geneID])
+    identify(log2(1+df$baseMean),df$log2FoldChange, labels = df[,geneID])
   write.table(df[idx,],paste0(outputFolder,"/ValuesForGenesClickedInMAP.txt"),sep="\t",quote=F,row.names=F)
   cat("The values for the points identified are in",paste0(outputFolder,"/ValuesForGenesClickedInMAP.txt.\n"))
   if(usePng){
@@ -309,17 +309,17 @@ if(click){
   library(ggplot2)
   library(ggrepel)
 
-  cmd<-paste("ggplot(data = df, aes(x = baseMean, y = log2FoldChange)) + theme_classic() + 
+  cmd<-paste("ggplot(data = df, aes(x = log2(1+baseMean), y = log2FoldChange)) + theme_classic() + 
   geom_point(colour = colorDots, size = 1) +
   ylab(\"log2 Fold Change\") +
-  xlab(\"Mean counts\") +
+  xlab(\"log2(1+Mean counts)\") +
   ylim(y=yLimUsed[1],yLimUsed[2]) +
   geom_text_repel(data = df[idx,] ,aes(label =",geneID,"), 
        box.padding = unit(0.45, \"lines\"))")
   if(exists("colOfCircle")){
     cmd<-paste0(cmd,"+
     geom_point(data=df[idx,],
-             aes(baseMean,log2FoldChange),shape=1,col=colOfCircle)")
+             aes(log2(1+baseMean),log2FoldChange),shape=1,col=colOfCircle)")
   }
   if(usePng){
     png(paste0(outputFolder,"/MAP_clicked_pretty.png"))
@@ -333,17 +333,17 @@ if(click){
 if(exists("dfGene")){
   library(ggplot2)
   library(ggrepel)
-  cmd<-paste("ggplot(data = df, aes(x = baseMean, y = log2FoldChange)) + theme_classic() + 
+  cmd<-paste("ggplot(data = df, aes(x = log2(1+baseMean), y = log2FoldChange)) + theme_classic() + 
   geom_point(colour = colorDots, size = 1) +
   ylab(\"log2 Fold Change\") +
-  xlab(\"Mean counts\") +
+  xlab(\"log2(1+Mean counts)\") +
   ylim(y=yLimUsed[1],yLimUsed[2]) +
   geom_text_repel(data = df[df[,colOfGeneID]%in%dfGene[,1],] ,aes(label =",colOfGeneID,"), 
        box.padding = unit(0.45, \"lines\"))")
   if(exists("colOfCircle")){
     cmd<-paste0(cmd,"+
     geom_point(data=df[df[,colOfGeneID]%in%dfGene[,1],],
-             aes(baseMean, log2FoldChange),shape=1,col=colOfCircle)")
+             aes(log2(1+baseMean), log2FoldChange),shape=1,col=colOfCircle)")
   }
   if(usePng){
     png(paste0(outputFolder,"/MAP_listOfGenes_pretty.png"))
