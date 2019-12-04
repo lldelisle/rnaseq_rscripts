@@ -66,10 +66,10 @@ if(exists("useFPKM")){
   if(is.logical(useFPKM)){
     if(useFPKM){
       expressionDF[,samplesToPlot]<-list(NULL)
-      samplesToPlot<-unlist(lapply(strsplit(colnames(expressionDF),"^FPKM_"),function(x){if(length(x)>1){return(x[2])}}))
+      samplesToPlot<-intersect(unlist(lapply(strsplit(colnames(expressionDF),"^FPKM_"),function(x){if(length(x)>1){return(x[2])}})),samplesPlanDF$sample)
       colnames(expressionDF)<-gsub("^FPKM_","",colnames(expressionDF))
       cat("expressionDF[,samplesToPlot]<-list(NULL)
-samplesToPlot<-unlist(lapply(strsplit(colnames(expressionDF),\"^FPKM_\"),function(x){if(length(x)>1){return(x[2])}}))
+samplesToPlot<-intersect(unlist(lapply(strsplit(colnames(expressionDF),\"^FPKM_\"),function(x){if(length(x)>1){return(x[2])}})),samplesPlanDF$sample)
 colnames(expressionDF)<-gsub(\"^FPKM_\",\"\",colnames(expressionDF))\n",file=fileWithAllCommands,append=T)
     }
   } else {
