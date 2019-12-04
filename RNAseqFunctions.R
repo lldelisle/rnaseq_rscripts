@@ -233,6 +233,10 @@ isValidColor <- function(colorname){
 }
 
 checkedPCA2D<-function(listOfPara,samplesPlan){
+  if(!class(listOfPara)=="list"){
+    cat("PCA2D is not a list.\n")
+    return(NULL)
+  }
   #First, check fill is only used when color is already used
   if("fill"%in%names(listOfPara) && !"color"%in%names(listOfPara)){
     cat("fill should be used for PCA2D only when color is already used.\n")
@@ -248,9 +252,53 @@ checkedPCA2D<-function(listOfPara,samplesPlan){
       if("shape"%in%names(listOfPara)){
         nbShape<-tryCatch(length(levels(samplesPlan[,listOfPara$shape])),error=function(e){0})
         if(nbShape>5){
-          cat("It is not possible to use more than 5 different shapes with both fill and color. Some",listOfPara$shape," will be redundant.\n")
+          cat("It is not possible to use more than 5 different shapes with both fill and color. Some shapes for ",listOfPara$shape," will be redundant.\n")
         }
       }
     }
   }
+  return(listOfPara)
+}
+
+checkedFixedColors<-function(proposedColors,samplesPlan){
+  if(!class(proposedColors)=="list"){
+    cat("fixedColors is not a list.\n")
+    return(NULL)
+  }
+  for(fac in names(proposedColors)){
+    if(!fac%in%colnames(samplesPlan)){
+      cat(fac,"is not part of the samplesplan.\n")
+      proposedColors[[fac]]<-NULL
+    } else if(!all(unique(samplesPlan[,fac])%in%names(proposedColors[[fac]]))){
+      cat("Not all possibilities of",fac,"are specified in the fixedColors.\n")
+      proposedColors[[fac]]<-NULL
+    } else if(!all(sapply(proposedColors[[fac]],isValidColor))){
+      cat("There are unvalid colors in fixedColors for",fac,"\n")
+      proposedColors[[fac]]<-NULL
+    }
+  }
+  return(proposedColors)
+}
+
+stringFromNamedVec<-function(v){
+  return(paste0("c(",paste0("\'",names(v),"\'=\"",v,"\"",collapse = ","),")"))
+}
+
+stringFromListOfNamedVec<-function(l){
+  return(paste0("list(",paste0("\'",names(l),"\'=",sapply(l,stringFromNamedVec),collapse = ","),")"))
+}
+
+getAddPara<-function(listOfPara,proposedColors){
+  addPara<-""
+  if("fill"%in%names(listOfPara)){
+    if(listOfPara$fill%in%names(proposedColors)){
+      addPara<-paste0(addPara,"+\nscale_fill_manual(values=proposedColors[[\"",listOfPara$fill,"\"]])")
+    }
+  }
+  if("color"%in%names(listOfPara)){
+    if(listOfPara$color%in%names(proposedColors)){
+      addPara<-paste0(addPara,"+\nscale_color_manual(values=proposedColors[[\"",listOfPara$color,"\"]])")
+    }
+  }
+  return(addPara)
 }
