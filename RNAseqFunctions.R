@@ -176,8 +176,9 @@ simplifyDF<-function(df,samples,unusedColnames=c("htseq_count_file","cufflinks_f
   newdf<-df
   rownames(newdf)<-newdf$sample
   colsIDToRM<-which(colnames(newdf)%in%unusedColnames)
+  newdf<-newdf[samples,]
   if(length(colsIDToRM)>0){
-    newdf<-newdf[samples,-which(colnames(newdf)%in%unusedColnames)]
+    newdf<-newdf[,-which(colnames(newdf)%in%unusedColnames)]
   }
   for(cn in colnames(newdf)){
     uniqVal<-unique(newdf[,cn])
