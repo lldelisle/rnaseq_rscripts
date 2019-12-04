@@ -1,0 +1,7 @@
+sample	Line	Tissue	Replicate
+at_R5_DFL_260_Wt	Wt	DFL	1
+at_R5_DFL_276_Wt	Wt	DFL	2
+at_R5_DFL_279_Wt	Wt	DFL	3
+at_R5_DFL_259_atR5	del(attP-Rel5)d9lac	DFL	1
+at_R5_DFL_278_atR5	del(attP-Rel5)d9lac	DFL	2
+at_R5_DFL_280_atR5	del(attP-Rel5)d9lac	DFL	3

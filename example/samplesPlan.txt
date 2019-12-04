@@ -1,0 +1,10 @@
+sample	Line	Tissue	Replicate	htseq_count_file	cufflinks_file
+at_R5_DFL_260_Wt	Wt	DFL	1	~/rnaseq_rscripts/data/htseqCount_atR5260AP.txt	~/rnaseq_rscripts/data/FPKM_atR5260AP.txt
+at_R5_DFL_276_Wt	Wt	DFL	2	~/rnaseq_rscripts/data/htseqCount_atR5276AP.txt	~/rnaseq_rscripts/data/FPKM_atR5276AP.txt
+at_R5_DFL_279_Wt	Wt	DFL	3	~/rnaseq_rscripts/data/htseqCount_atR5279AP.txt	~/rnaseq_rscripts/data/FPKM_atR5279AP.txt
+at_R5_DFL_259_atR5	del(attP-Rel5)d9lac	DFL	1	~/rnaseq_rscripts/data/htseqCount_atR5259AP.txt	~/rnaseq_rscripts/data/FPKM_atR5259AP.txt
+at_R5_DFL_278_atR5	del(attP-Rel5)d9lac	DFL	2	~/rnaseq_rscripts/data/htseqCount_atR5278AP.txt	~/rnaseq_rscripts/data/FPKM_atR5278AP.txt
+at_R5_DFL_280_atR5	del(attP-Rel5)d9lac	DFL	3	~/rnaseq_rscripts/data/htseqCount_atR5280AP.txt	~/rnaseq_rscripts/data/FPKM_atR5280AP.txt
+at_R5_PFL_260_Wt	Wt	PFL	1	~/rnaseq_rscripts/data/htseqCount_atR5260PL.txt	~/rnaseq_rscripts/data/FPKM_atR5260PL.txt
+at_R5_PFL_276_Wt	Wt	PFL	2	~/rnaseq_rscripts/data/htseqCount_atR5276PL.txt	~/rnaseq_rscripts/data/FPKM_atR5276PL.txt
+at_R5_PFL_279_Wt	Wt	PFL	3	~/rnaseq_rscripts/data/htseqCount_atR5279PL.txt	~/rnaseq_rscripts/data/FPKM_atR5279PL.txt

@@ -1,12 +1,12 @@
 ### Required for all steps ###
-RNAseqFunctionPath<-"~/Dropbox/scripts/toShare/RNAseqNewVersion/RNAseqFunctions_v05.R"
+RNAseqFunctionPath<-"~/rnaseq_rscripts/RNAseqFunctions.R"
 
 #### STEP 4 - PLOTS RESULTS OF DESEQ2 ###
 #Required
-tableWithResultsOfDifferentialExpression<-"/home/ldelisle/Desktop/RNAseqTests/DESeq2AnalysisForFactorTissue.txt" #You can put here the result of step2 or any table with at least 2 columns (padj and log2FoldChange) for Volcano and 3 columns (padj, log2FoldChange and baseMean) for MAP.
+tableWithResultsOfDifferentialExpression<-"~/rnaseq_rscripts/outputs/DESeq2/DESeq2AnalysisDFLPerGeno.txt" #You can put here the result of step2 or any table with at least 2 columns (padj and log2FoldChange) for Volcano and 3 columns (padj, log2FoldChange and baseMean) for MAP.
 
-outputFolder<-"/home/ldelisle/Desktop/RNAseqTests/plotsDESEQ2Tissue"
-usePng<-F#By default pdf is used as output. If set to T, png will be used.
+outputFolder<-"~/rnaseq_rscripts/outputs/plots/step4"
+usePng<-T#By default pdf is used as output. If set to T, png will be used.
 
 ### Common for Volcano and MAP ###
 #significant thresholds:
@@ -17,7 +17,8 @@ colOfNonSignificant<-"grey"
 colOfSignificant<-"blue"
 click<-T #Do you want to click on the plot to be able to identify some genes. (T=yes, F=no)
 geneID<-"gene_name" #If you want to click, provide here the name of the column which can be used to label the gene.
-fileWithGenes<-"~/Dropbox/scripts/toShare/RNAseqNewVersion/genes.txt" #You can also provide a list of genes you want to identify on the plots. One gene per line. The first line of the gene file should correspond to a column in the tableWithResultsOfDifferentialExpression file.
+fileWithGenes<-"~/rnaseq_rscripts/example/genesHoxDandAround.txt" #You can also provide a list of genes you want to identify on the plots. One gene per line. The first line of the gene file should correspond to a column in the tableWithResultsOfDifferentialExpression file.
+colOfCircle<-"red"
 
 ### Volcano ###
 
