@@ -1,21 +1,15 @@
 options(stringsAsFactors=F)
 rm(list=ls())
 
-library(tools)
-
-if(!("ggplot2" %in% rownames(installed.packages()))) {
-  install.packages("ggplot2")
+if (!"devtools" %in% installed.packages()){
+    install.packages("devtools", repos = "https://stat.ethz.ch/CRAN/")
 }
-
-if (!("pheatmap" %in% rownames(installed.packages()))) {
-  source("http://bioconductor.org/biocLite.R") #adds bioconductor site as a package source
-  biocLite("pheatmap") #downloads and install pheatmap package from bioconductor
-}
-if (!("RColorBrewer" %in% rownames(installed.packages()))) {
-  source("http://bioconductor.org/biocLite.R") #adds bioconductor site as a package source
-  biocLite("RColorBrewer") #downloads and install pheatmap package from bioconductor
-}
-
+devtools::install_github("lldelisle/usefulLDfunctions")
+library(usefulLDfunctions)
+safelyLoadAPackageInCRANorBioconductor("tools")
+safelyLoadAPackageInCRANorBioconductor("ggplot2")
+safelyLoadAPackageInCRANorBioconductor("pheatmap")
+safelyLoadAPackageInCRANorBioconductor("RColorBrewer")
 
 if(length(commandArgs(TRUE))>0){
   f<-commandArgs(TRUE)[1]
@@ -183,7 +177,6 @@ if(exists("nbOfPC")){
       #var contains the variance for each PC
       var <- round((sample.pca$sdev) ^ 2 / sum(sample.pca$sdev ^ 2) * 100)
       cat("var <- round((sample.pca$sdev) ^ 2 / sum(sample.pca$sdev ^ 2) * 100)\n", file=fileWithAllCommands,append=T)
-      library("ggplot2")
       cat("library(ggplot2)\n", file=fileWithAllCommands,append=T)
       #####
       #Plot one PC per one PC:
@@ -308,8 +301,6 @@ if(exists("plotMatrixAndClustering")){
     if(plotMatrixAndClustering){
       cat("Performing correlation and clustering...\n")
       sampleDists <- dist(t(rldata))
-      library("pheatmap")
-      library("RColorBrewer")
       sampleDistMatrix <- as.matrix(sampleDists)
       rownames(sampleDistMatrix) <- samplesToPlot
       colnames(sampleDistMatrix) <- samplesToPlot
@@ -553,7 +544,6 @@ if(exists("fileWithGenes")){
       if(nbXvalues>4){
         additionalParam<-paste0(additionalParam,"+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))")
       }
-      library("ggplot2")
       cat("library(ggplot2)\n", file=fileWithAllCommands,append=T)
       pdfSize<-max(7,6.5+0.12*nbXvalues)
       pngSize<-max(480,445+5*nbXvalues)
@@ -639,7 +629,6 @@ dev.off()
         } else {
           clusterSamples<-F
         }
-        library("pheatmap")
         cols<-unique(which(colnames(factorizedSP)%in%c(xaxisForGenes,unlist(plotGenesPara))))
         cat("library(pheatmap)
         cols<-c(",paste(cols,collapse=","),")\n", file=fileWithAllCommands,append=T)

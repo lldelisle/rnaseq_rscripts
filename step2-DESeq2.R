@@ -1,12 +1,13 @@
 options(stringsAsFactors=F)
 rm(list=ls())
 
-library(tools)
-if(!("DESeq2" %in% rownames(installed.packages()))){
-  source("https://bioconductor.org/biocLite.R")
-  biocLite("DESeq2")
+if (!"devtools" %in% installed.packages()){
+    install.packages("devtools", repos = "https://stat.ethz.ch/CRAN/")
 }
-library(DESeq2)
+devtools::install_github("lldelisle/usefulLDfunctions")
+library(usefulLDfunctions)
+safelyLoadAPackageInCRANorBioconductor("DESeq2")
+safelyLoadAPackageInCRANorBioconductor("tools")
 
 if(length(commandArgs(TRUE))>0){
   f<-commandArgs(TRUE)[1]
