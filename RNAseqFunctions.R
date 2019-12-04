@@ -175,7 +175,10 @@ normalizeHKRank<-function(FPKMCuff,nbgenes,chrToRm=c("chrM")){
 simplifyDF<-function(df,samples,unusedColnames=c("htseq_count_file","cufflinks_file"),keepFactorsWithOneValue=F){
   newdf<-df
   rownames(newdf)<-newdf$sample
-  newdf<-newdf[samples,-which(colnames(newdf)%in%unusedColnames)]
+  colsIDToRM<-which(colnames(newdf)%in%unusedColnames)
+  if(length(colsIDToRM)>0){
+    newdf<-newdf[samples,-which(colnames(newdf)%in%unusedColnames)]
+  }
   for(cn in colnames(newdf)){
     uniqVal<-unique(newdf[,cn])
     if(length(uniqVal)==1){
