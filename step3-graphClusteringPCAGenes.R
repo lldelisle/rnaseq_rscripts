@@ -136,7 +136,7 @@ if(exists("fixedColors")){
   cat("fixedColors<-",stringFromListOfNamedVec(fixedColors),"\n", file=fileWithAllCommands,append=T)
 } else {
   fixedColors<-NULL
-  cat("fixedColors<-NULL")
+  cat("fixedColors<-NULL\n", file=fileWithAllCommands,append=T)
 }
 
 #The data are restricted to the samples to plot 
