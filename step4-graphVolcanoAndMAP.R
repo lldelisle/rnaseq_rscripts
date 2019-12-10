@@ -157,9 +157,11 @@ if(usePng){
 } else {
   pdf(paste0(outputFolder,"/Volcano.pdf"),title="Volcano")
 }
+# Remove the genes with no padj:
+sub.df <- subset(df, ! is.na(padj))
 #the first plot is drawn with all points (volcano plot is -log10(p-val)=f(log2FC))
 plot(
-  df$log2FoldChange,-log10(df$padj),pch = 16,col = colorDots,cex = 0.5,
+  sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = colorDots,cex = 0.5,
   xlab = "log2 Fold Change",ylab = "-log10 of adjusted p-value"
 )
 yMaxUsed<-par('usr')[4]
@@ -175,7 +177,7 @@ if(exists("maxYVolcano")){
         pdf(paste0(outputFolder,"/Volcano_subset.pdf"),title="Volcano_subset")
       }
       plot(
-        df$log2FoldChange,-log10(df$padj),pch = 16,col = colorDots,cex = 0.5,
+        sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = colorDots,cex = 0.5,
         ylim = c(0,maxYVolcano),
         xlab = "log2 Fold Change",ylab = "-log10 of adjusted p-value"
       )
@@ -187,14 +189,14 @@ if(exists("maxYVolcano")){
 
 if(click){
   plot(
-    df$log2FoldChange,-log10(df$padj),pch = 16,col = colorDots,cex = 0.5,
+    sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = colorDots,cex = 0.5,
     ylim = c(0,yMaxUsed),
     xlab = "log2 Fold Change",ylab = "-log10 of adjusted p-value"
   )
   cat("Click on points to print the name of the gene.\nClick on ESC to stop selecting points.\n")
   idx <-
-    identify(df$log2FoldChange,-log10(df$padj), labels = df[,geneID])
-  write.table(df[idx,],paste0(outputFolder,"/ValuesForGenesClickedInVolcano.txt"),sep="\t",quote=F,row.names=F)
+    identify(sub.df$log2FoldChange,-log10(sub.df$padj), labels = sub.df[,geneID])
+  write.table(sub.df[idx,],paste0(outputFolder,"/ValuesForGenesClickedInVolcano.txt"),sep="\t",quote=F,row.names=F)
   cat("The values for the points identified are in",paste0(outputFolder,"/ValuesForGenesClickedInVolcano.txt.\n"))
   if(usePng){
     dev.copy(png, paste0(outputFolder,"/Volcano_clicked.png"))
@@ -205,16 +207,16 @@ if(click){
   library(ggplot2)
   library(ggrepel)
 
-  cmd<-paste("ggplot(data = df, aes(x = log2FoldChange, y = -log10(padj))) + theme_classic() + 
+  cmd<-paste("ggplot(data = sub.df, aes(x = log2FoldChange, y = -log10(padj))) + theme_classic() + 
   geom_point(colour = colorDots, size = 1) +
   xlab(\"log2 Fold Change\") +
   ylab(\"-log10 of adjusted p-value\") +
   ylim(y=0,yMaxUsed) +
-  geom_text_repel(data = df[idx,] ,aes(label =",geneID,"), 
+  geom_text_repel(data = sub.df[idx,] ,aes(label =",geneID,"), 
        box.padding = unit(0.45, \"lines\"))")
   if(exists("colOfCircle")){
     cmd<-paste0(cmd,"+
-    geom_point(data=df[idx,],
+    geom_point(data=sub.df[idx,],
              aes(log2FoldChange, y = -log10(padj)),shape=1,col=colOfCircle)")
   }
   if(usePng){
@@ -229,16 +231,16 @@ if(click){
 if(exists("dfGene")){
   library(ggplot2)
   library(ggrepel)
-  cmd<-paste("ggplot(data = df, aes(x = log2FoldChange, y = -log10(padj))) + theme_classic() + 
+  cmd<-paste("ggplot(data = sub.df, aes(x = log2FoldChange, y = -log10(padj))) + theme_classic() + 
   geom_point(colour = colorDots, size = 1) +
   xlab(\"log2 Fold Change\") +
   ylab(\"-log10 of adjusted p-value\") +
   ylim(y=0,yMaxUsed) +
-  geom_text_repel(data = df[df[,colOfGeneID]%in%dfGene[,1],] ,aes(label =",colOfGeneID,"), 
+  geom_text_repel(data = sub.df[sub.df[,colOfGeneID]%in%dfGene[,1],] ,aes(label =",colOfGeneID,"), 
        box.padding = unit(0.45, \"lines\"))")
   if(exists("colOfCircle")){
     cmd<-paste0(cmd,"+
-    geom_point(data=df[df[,colOfGeneID]%in%dfGene[,1],],
+    geom_point(data=sub.df[sub.df[,colOfGeneID]%in%dfGene[,1],],
              aes(log2FoldChange, y = -log10(padj)),shape=1,col=colOfCircle)")
   }
   if(usePng){
