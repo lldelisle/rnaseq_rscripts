@@ -159,9 +159,10 @@ if(usePng){
 }
 # Remove the genes with no padj:
 sub.df <- subset(df, ! is.na(padj))
+sub.colorDots <- colorDots[!is.na(df$padj)]
 #the first plot is drawn with all points (volcano plot is -log10(p-val)=f(log2FC))
 plot(
-  sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = colorDots,cex = 0.5,
+  sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = sub.colorDots,cex = 0.5,
   xlab = "log2 Fold Change",ylab = "-log10 of adjusted p-value"
 )
 yMaxUsed<-par('usr')[4]
@@ -177,7 +178,7 @@ if(exists("maxYVolcano")){
         pdf(paste0(outputFolder,"/Volcano_subset.pdf"),title="Volcano_subset")
       }
       plot(
-        sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = colorDots,cex = 0.5,
+        sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = sub.colorDots,cex = 0.5,
         ylim = c(0,maxYVolcano),
         xlab = "log2 Fold Change",ylab = "-log10 of adjusted p-value"
       )
@@ -189,7 +190,7 @@ if(exists("maxYVolcano")){
 
 if(click){
   plot(
-    sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = colorDots,cex = 0.5,
+    sub.df$log2FoldChange,-log10(sub.df$padj),pch = 16,col = sub.colorDots,cex = 0.5,
     ylim = c(0,yMaxUsed),
     xlab = "log2 Fold Change",ylab = "-log10 of adjusted p-value"
   )
@@ -208,7 +209,7 @@ if(click){
   library(ggrepel)
 
   cmd<-paste("ggplot(data = sub.df, aes(x = log2FoldChange, y = -log10(padj))) + theme_classic() + 
-  geom_point(colour = colorDots, size = 1) +
+  geom_point(colour = sub.colorDots, size = 1) +
   xlab(\"log2 Fold Change\") +
   ylab(\"-log10 of adjusted p-value\") +
   ylim(y=0,yMaxUsed) +
@@ -232,7 +233,7 @@ if(exists("dfGene")){
   library(ggplot2)
   library(ggrepel)
   cmd<-paste("ggplot(data = sub.df, aes(x = log2FoldChange, y = -log10(padj))) + theme_classic() + 
-  geom_point(colour = colorDots, size = 1) +
+  geom_point(colour = sub.colorDots, size = 1) +
   xlab(\"log2 Fold Change\") +
   ylab(\"-log10 of adjusted p-value\") +
   ylim(y=0,yMaxUsed) +
