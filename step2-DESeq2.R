@@ -157,11 +157,7 @@ if(exists("tableWithAnnotations")){
 
 if(exists("gtfFile")){
   if(file.exists(gtfFile)){
-    if(!"rtracklayer"%in%installed.packages()){
-      source("https://bioconductor.org/biocLite.R")
-      biocLite("rtracklayer")
-    }
-    library(rtracklayer)
+    safelyLoadAPackageInCRANorBioconductor("rtracklayer")
     cat("Reading gtf file...")
     gtf<-readGFF(gtfFile)
     cat("Done\n")
