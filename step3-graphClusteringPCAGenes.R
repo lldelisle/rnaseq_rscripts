@@ -367,22 +367,22 @@ rownames(annot) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
         col = colors
       )
       cat("pheatmap(
-        sampleDistMatrix,
-        clustering_distance_rows = sampleDists,
-        clustering_distance_cols = sampleDists,
-        cellwidth = 10,
-        cellheight = 10,
-        annotation = annot,
-        annotation_colors = fixedColors,
-        main=\"Euclidean distance - complete clustering\",
-        col = colors,
-        clustering_method=\"complete\"
+  sampleDistMatrix,
+  clustering_distance_rows = sampleDists,
+  clustering_distance_cols = sampleDists,
+  cellwidth = 10,
+  cellheight = 10,
+  annotation = annot,
+  annotation_colors = fixedColors,
+  main=\"Euclidean distance - complete clustering\",
+  col = colors,
+  clustering_method=\"complete\"
 )\n", file=fileWithAllCommands,append=T)
       if(usePng){
         dev.off()
         png(paste0(outputFolder,"/CorrelationMatrix_EuclWard.png"),width=pngSize,height=pngSize)
         cat("dev.off()
-        png(paste0(outputFolder,\"/CorrelationMatrix_EuclWard.png\"),width=",pngSize,",height=",pngSize,")\n", file=fileWithAllCommands,append=T)
+png(paste0(outputFolder,\"/CorrelationMatrix_EuclWard.png\"),width=",pngSize,",height=",pngSize,")\n", file=fileWithAllCommands,append=T)
       }
       pheatmap(
         sampleDistMatrix,
@@ -397,47 +397,51 @@ rownames(annot) <- samplesToPlot\n", file=fileWithAllCommands,append=T)
         col = colors
       )
       cat("pheatmap(
-        sampleDistMatrix,
-        clustering_distance_rows = sampleDists,
-        clustering_distance_cols = sampleDists,
-        cellwidth = 10,
-        cellheight = 10,
-        annotation = annot,
-        annotation_colors = fixedColors,
-        main=\"Euclidean distance - ward clustering\",
-        clustering_method=\"ward.D2\",
-        col = colors
+  sampleDistMatrix,
+  clustering_distance_rows = sampleDists,
+  clustering_distance_cols = sampleDists,
+  cellwidth = 10,
+  cellheight = 10,
+  annotation = annot,
+  annotation_colors = fixedColors,
+  main=\"Euclidean distance - ward clustering\",
+  clustering_method=\"ward.D2\",
+  col = colors
 )\n", file=fileWithAllCommands,append=T)
       if(usePng){
         dev.off()
         png(paste0(outputFolder,"/CorrelationMatrix_SpearWard.png"),width=pngSize,height=pngSize)
         cat("dev.off()
-        png(paste0(outputFolder,\"/CorrelationMatrix_SpearWard.png\"),width=",pngSize,",height=",pngSize,")\n", file=fileWithAllCommands,append=T)
+png(paste0(outputFolder,\"/CorrelationMatrix_SpearWard.png\"),width=",pngSize,",height=",pngSize,")\n", file=fileWithAllCommands,append=T)
       }
+      correlationMatrix <- cor(rldata, method="spearman")
+      newSampleDist <- as.dist(1 - correlationMatrix)
       pheatmap(
-        1-cor(rldata,method="spearman"),
-        clustering_distance_rows = sampleDists,
-        clustering_distance_cols = sampleDists,
+        correlationMatrix,
+        clustering_distance_rows = newSampleDist,
+        clustering_distance_cols = newSampleDist,
         cellwidth = 10,
         cellheight = 10,
         annotation = annot,
         annotation_colors = fixedColors,
-        main="1-spearmanCor - ward clustering",
+        main="spearmanCor - ward clustering",
         clustering_method="ward.D2",
-        col = colors
+        col = rev(colors)
       )
       dev.off()
-      cat("pheatmap(
-        1-cor(rldata,method=\"spearman\"),
-        clustering_distance_rows = sampleDists,
-        clustering_distance_cols = sampleDists,
-        cellwidth = 10,
-        cellheight = 10,
-        annotation = annot,
-        annotation_colors = fixedColors,
-        main=\"1-spearmanCor - ward clustering\",
-        clustering_method=\"ward.D2\",
-        col = colors
+      cat("correlationMatrix <- cor(rldata, method=\"spearman\")
+newSampleDist <- as.dist(1 - correlationMatrix)
+pheatmap(
+    correlationMatrix,
+    clustering_distance_rows = newSampleDist,
+    clustering_distance_cols = newSampleDist,
+    cellwidth = 10,
+    cellheight = 10,
+    annotation = annot,
+    annotation_colors = fixedColors,
+    main=\"spearmanCor - ward clustering\",
+    clustering_method=\"ward.D2\",
+    col = rev(colors)
 )
 dev.off()\n", file=fileWithAllCommands,append=T)
     }
