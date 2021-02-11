@@ -152,6 +152,8 @@ if(exists("tableWithAnnotations")){
     if(!is.na(geneIDColInAnnotations)){
       annot.df<-ann[match(rownames(resOrdered),ann[,geneIDColInAnnotations]),]
     }
+  } else {
+    cat("The annotation file specified:",tableWithAnnotations," does not exists. It will not be added.\n")
   }
 }
 
