@@ -49,7 +49,7 @@ I highly recommand to use the template configFileRNAseq_step1.R in the example f
 - (optionnal) outputFolderForStep1: the folder where the merged tables will be (if not provided, the folder of the samples plan is used).
 - mergeCounts: put T if you want to merge the counts.
 - subsetCounts: put T if you want to remove from the merged table of counts some genes. Then you will need:
-    - genesToRmFromCounts: the path for the list of ensembl ID of genes you want to exclude from the table. If you want to remove genes from a whole chromosome, you can use the script getGeneListFromChrAndGTF.R available in the toolBoxForMutantAndWTGenomes repository.
+    - genesToRmFromCounts: the path for the list of ensembl ID of genes you want to exclude from the table. If you want to remove genes from a whole chromosome, you can use the script getGeneListFromChrAndGTF.R available in the [toolBoxForMutantAndWTGenomes repository](https://github.com/lldelisle/toolBoxForMutantAndWTGenomes).
     - If you had put mergeCounts<-F, you need to provide the path of the table with all counts in initialTableWithCount as well as the geneIDColInInitialTable which is the column name where you have the genes ids.
 - mergeFPKM: put T if you want to merge the FPKM values from cufflinks. Then you will need:
     - oneLinePerEnsemblID (By default cufflinks split the transcripts which do not overlap in different locus and so different lines, put T if you want to sum the FPKM for non overlapping transcripts (put F if not).)
