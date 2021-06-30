@@ -6,6 +6,7 @@ if (!"devtools" %in% installed.packages()){
 }
 devtools::install_github("lldelisle/usefulLDfunctions")
 library(usefulLDfunctions)
+safelyLoadAPackageInCRANorBioconductor("colorspace")
 safelyLoadAPackageInCRANorBioconductor("DESeq2")
 safelyLoadAPackageInCRANorBioconductor("tools")
 
