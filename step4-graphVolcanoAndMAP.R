@@ -251,6 +251,7 @@ if(exists("dfGene")){
   }
   print(eval(parse(text = cmd)))
   dev.off()
+  write.table(sub.df[sub.df[,colOfGeneID]%in%dfGene[,1],],paste0(outputFolder,"/ValuesForGenesIndfGenes.txt"),sep="\t",quote=F,row.names=F)
 }
 
 ### MAP ###
