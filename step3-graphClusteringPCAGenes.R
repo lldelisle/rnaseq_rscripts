@@ -3,20 +3,14 @@ rm(list=ls())
 
 library(tools)
 
-if(!("ggplot2" %in% rownames(installed.packages()))) {
-  install.packages("ggplot2")
+if (!"devtools" %in% installed.packages()){
+  install.packages("devtools", repos = "https://stat.ethz.ch/CRAN/")
 }
-library(ggplot2)
-
-if(!("pheatmap" %in% rownames(installed.packages()))) {
-  install.packages("pheatmap")
-}
-library(pheatmap)
-
-if(!("RColorBrewer" %in% rownames(installed.packages()))) {
-  install.packages("RColorBrewer")
-}
-library(RColorBrewer)
+devtools::install_github("lldelisle/usefulLDfunctions")
+library(usefulLDfunctions)
+safelyLoadAPackageInCRANorBioconductor("ggplot2")
+safelyLoadAPackageInCRANorBioconductor("pheatmap")
+safelyLoadAPackageInCRANorBioconductor("RColorBrewer")
 
 if(length(commandArgs(TRUE))>0){
   f<-commandArgs(TRUE)[1]

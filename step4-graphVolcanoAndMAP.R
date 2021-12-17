@@ -3,12 +3,13 @@ rm(list=ls())
 
 library(tools)
 
-if(!("ggplot2" %in% rownames(installed.packages()))) {
-  install.packages("ggplot2")
+if (!"devtools" %in% installed.packages()){
+  install.packages("devtools", repos = "https://stat.ethz.ch/CRAN/")
 }
-if(!("ggrepel" %in% rownames(installed.packages()))) {
-  install.packages("ggrepel")
-}
+devtools::install_github("lldelisle/usefulLDfunctions")
+library(usefulLDfunctions)
+safelyLoadAPackageInCRANorBioconductor("ggplot2")
+safelyLoadAPackageInCRANorBioconductor("ggrepel")
 
 if(length(commandArgs(TRUE))>0){
   f<-commandArgs(TRUE)[1]
