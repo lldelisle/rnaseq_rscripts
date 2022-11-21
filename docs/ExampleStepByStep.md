@@ -22,10 +22,10 @@ cd ~/rnaseq_rscripts
 mkdir data
 cd data
 for sample in atR5259AP atR5260AP atR5260PL atR5276AP atR5276PL atR5278AP atR5279AP atR5279PL  atR5280AP; do
-    wget https://www.zenodo.org/record/3562052/files/FPKM_${sample}.txt
-    wget https://www.zenodo.org/record/3562052/files/htseqCount_${sample}.txt
+    curl -O https://www.zenodo.org/record/3562052/files/FPKM_${sample}.txt
+    curl -O https://www.zenodo.org/record/3562052/files/htseqCount_${sample}.txt
 done
-wget https://www.zenodo.org/record/3562052/files/mergeOverlapGenesOfFilteredTranscriptsOfMus_musculus.GRCm38.94_ExonsOnly_UCSC_withIsland3.gtf.gz
+curl -O https://www.zenodo.org/record/3562052/files/mergeOverlapGenesOfFilteredTranscriptsOfMus_musculus.GRCm38.94_ExonsOnly_UCSC_withIsland3.gtf.gz
 ```
 
 ## Context
