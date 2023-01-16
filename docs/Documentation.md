@@ -29,7 +29,7 @@ An easy way to do your samplesplan is:
 - Modify the columns to fit with your experiment, add or remove extra rows, extra columns.
 - Save it as tabulated delimited file.
 
-**Warning**: Each sample name should begin with a letter, Each column name also...
+**Warning**: Each sample name should begin with a letter and do not contain `-` (`.` and `_` are possible), Each column name also...
 
 ### Config files
 Config files are R files which will be sourced by the script to get the value of the different parameters. So, it is a R syntax: `parameter <- value` or `parameter = value`.
