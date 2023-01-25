@@ -12,6 +12,10 @@ if (any(!c("ggplot2", "pheatmap", "RColorBrewer") %in% installed.packages())) {
   safelyLoadAPackageInCRANorBioconductor("ggplot2")
   safelyLoadAPackageInCRANorBioconductor("pheatmap")
   safelyLoadAPackageInCRANorBioconductor("RColorBrewer")
+} else {
+  library(ggplot2)
+  library(pheatmap)
+  library(RColorBrewer)
 }
 
 if (length(commandArgs(TRUE)) > 0) {

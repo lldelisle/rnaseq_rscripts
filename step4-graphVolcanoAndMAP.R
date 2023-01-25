@@ -11,6 +11,9 @@ if (any(!c("ggplot2", "ggrepel") %in% installed.packages())) {
   library(usefulLDfunctions)
   safelyLoadAPackageInCRANorBioconductor("ggplot2")
   safelyLoadAPackageInCRANorBioconductor("ggrepel")
+} else {
+  library(ggplot2)
+  library(ggrepel)
 }
 
 if (length(commandArgs(TRUE)) > 0) {

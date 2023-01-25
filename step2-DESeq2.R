@@ -10,6 +10,10 @@ if (any(!c("colorspace", "DESeq2", "tools") %in% installed.packages())) {
   safelyLoadAPackageInCRANorBioconductor("colorspace")
   safelyLoadAPackageInCRANorBioconductor("DESeq2")
   safelyLoadAPackageInCRANorBioconductor("tools")
+} else {
+  library(colorspace)
+  library(DESeq2)
+  library(tools)
 }
 if (length(commandArgs(TRUE)) > 0) {
   f <- commandArgs(TRUE)[1]
