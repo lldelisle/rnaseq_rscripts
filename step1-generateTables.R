@@ -164,6 +164,22 @@ if (exists("mergeFPKM")) {
         ".txt"), sep = "\t", row.names = F, quote = F)
       cat(paste0("The FPKM have been merged in ", outputFolderForStep1, "/",
         name, ".txt.\n"))
+      if (exists("subsetFPKM")) {
+        if (!is.logical(subsetFPKM)) {
+          cat("subsetFPKM is not boolean so the FPKM will not be subset.\n")
+        } else {
+          if (subsetFPKM) {
+            if (!exists("chrToRemove")) {
+              cat("chrToRemove does not exists. Will not subset the FPKM.\n")
+            } else {
+              write.table(FPKMCuff[! grepl(paste0("^", chrToRemove, ":", collapse = "|"), FPKMCuff$locus), ], file = paste0(outputFolderForStep1, "/", name,
+                                                  "_subset.txt"), sep = "\t", row.names = F, quote = F)
+              cat(paste0("The FPKM have been subsetted in ", outputFolderForStep1, "/",
+                         name, "_subset.txt.\n"))
+            }
+          }
+        }
+      }
     }
   }
 }

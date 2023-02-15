@@ -5,7 +5,7 @@ RNAseqFunctionPath <- "~/rnaseq_rscripts/RNAseqFunctions.R"
 samplesPlan <- "~/rnaseq_rscripts/example/samplesPlan.txt"
 
 
-#### STEP 3 - PLOTS #### Required You can put here either the FPKM norm values
+#### STEP 3 - PLOTS #### Required You can put here either the FPKM norm values (subsetted or not)
 #### or the count norm values obtained after DESeq2
 tableWithNormalizedExpression <- "~/rnaseq_rscripts/outputs/DESeq2/DESeq2AnalysisDFLPerGeno.txt"
 # In case you are using a file with both raw counts and FPKM you need to choose

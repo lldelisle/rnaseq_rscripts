@@ -27,6 +27,10 @@ mergeFPKM <- T
 # locus and so different lines, put T if you want to sum the FPKM for non
 # overlapping transcripts (put F if not).
 oneLinePerEnsemblID <- T
+# Optional: subset the FPKM table Do you want to remove some genes from the
+# FPKM table
+subsetFPKM <- T
+chrToRemove <- c("chrM")
 # Anouk method: Genes that have the less variable rank should have the same
 # expression.
 normFPKMWithAnoukMethod <- T

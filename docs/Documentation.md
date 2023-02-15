@@ -53,6 +53,8 @@ I highly recommand to use the template configFileRNAseq_step1.R in the example f
     - If you had put mergeCounts<-F, you need to provide the path of the table with all counts in initialTableWithCount as well as the geneIDColInInitialTable which is the column name where you have the genes ids.
 - mergeFPKM: put T if you want to merge the FPKM values from cufflinks. Then you will need:
     - oneLinePerEnsemblID (By default cufflinks split the transcripts which do not overlap in different locus and so different lines, put T if you want to sum the FPKM for non overlapping transcripts (put F if not).)
+    - subsetFPKM: put T if you want to remove some genes from the merged FPKM table and provide the name of the chromosome in chrToRemove
+    - chrToRemove: the list in R format (c("chrA","chrB")) of chromosome you want to remove.
 - normFPKMWithAnoukMethod: put T if you want to renormalize the FPKM (FPKM are already normalized to million mapped reads) with Anouk method: Genes that have the less variable rank should have the same expression. Then you will need:
     - chrToRemoveBeforeNormWithAnoukMethod: the list in R format (c("chrA","chrB")) of chromosome you want to remove from the normalization process. Warning, these genes will still be part of the output file.
     - nbOfGenesWithAnoukMethod: the number of genes you want to use to evaluate the correction factor which should be applied.

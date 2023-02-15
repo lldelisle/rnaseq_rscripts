@@ -26,6 +26,7 @@ for sample in atR5259AP atR5260AP atR5260PL atR5276AP atR5276PL atR5278AP atR527
     curl -O https://www.zenodo.org/record/3562052/files/htseqCount_${sample}.txt
 done
 curl -O https://www.zenodo.org/record/3562052/files/mergeOverlapGenesOfFilteredTranscriptsOfMus_musculus.GRCm38.94_ExonsOnly_UCSC_withIsland3.gtf.gz
+cd ..
 ```
 
 ## Context
@@ -48,13 +49,14 @@ The counts have been merged in ~/rnaseq_rscripts/outputs/mergedTables//AllHTSeqC
 Will subset the counts generated at the previous step.
 The counts have been subset in ~/rnaseq_rscripts/outputs/mergedTables//AllHTSeqCounts_subset.txt.
 The FPKM have been merged in ~/rnaseq_rscripts/outputs/mergedTables//AllCufflinks_Simplified.txt.
+The FPKM have been subsetted in ~/rnaseq_rscripts/outputs/mergedTables//AllCufflinks_Simplified_subset.txt.
 Will normalize the FPKM generated at the previous step.
 36 lines removed.
 The FPKM have been normalized in ~/rnaseq_rscripts/outputs/mergedTables//AllCufflinks_Simplified_norm.txt.
 The coefficients used to normalize are in ~/rnaseq_rscripts/outputs/mergedTables//AllCufflinks_Simplified_coeffsUsedForNorm.txt.
 ```
 
-You now have 5 files in `~/rnaseq_rscripts/outputs/mergedTables/`.
+You now have 6 files in `~/rnaseq_rscripts/outputs/mergedTables/`.
 
 ## Launch the second script
 
