@@ -169,7 +169,16 @@ if (exists("tableWithAnnotations")) {
 
 if (exists("gtfFile")) {
   if (file.exists(gtfFile)) {
-    safelyLoadAPackageInCRANorBioconductor("rtracklayer")
+    if (!"rtracklayer" %in% installed.packages()) {
+      if (!"devtools" %in% installed.packages()) {
+        install.packages("devtools", repos = "https://stat.ethz.ch/CRAN/")
+      }
+      devtools::install_github("lldelisle/usefulLDfunctions")
+      library(usefulLDfunctions)
+      safelyLoadAPackageInCRANorBioconductor("rtracklayer")
+    } else {
+      library(rtracklayer)
+    }
     cat("Reading gtf file...")
     gtf <- readGFF(gtfFile)
     cat("Done\n")
