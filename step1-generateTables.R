@@ -23,7 +23,7 @@ if (!exists("samplesPlan")) {
 if (!file.exists(samplesPlan)) {
   stop("The file specified as samplesPlan does not exist:", samplesPlan)
 }
-samplesPlanDF <- read.delim(samplesPlan)
+samplesPlanDF <- read.delim(samplesPlan, check.names = FALSE)
 if (!("sample" %in% colnames(samplesPlanDF))) {
   stop("The samplesPlan table do not contain a column called \"sample\".")
 }
@@ -73,7 +73,7 @@ if (exists("subsetCounts")) {
       } else {
         if (exists("initialTableWithCount")) {
           if (file.exists(initialTableWithCount)) {
-            htseqCounts <- read.delim(initialTableWithCount)
+            htseqCounts <- read.delim(initialTableWithCount, check.names = FALSE)
             if (!"Ens_ID" %in% colnames(htseqCounts)) {
               if (exists("geneIDColInInitialTable")) {
                 if (geneIDColInInitialTable %in% colnames(htseqCounts)) {
@@ -196,7 +196,7 @@ if (exists("normFPKMWithAnoukMethod")) {
       } else {
         if (exists("initialTableWithFPKM")) {
           if (file.exists(initialTableWithFPKM)) {
-            FPKMCuff <- read.delim(initialTableWithFPKM)
+            FPKMCuff <- read.delim(initialTableWithFPKM, check.names = FALSE)
             if (length(grep("FPKM_", colnames(FPKMCuff))) == 0) {
               cat("The table provided in initialTableWithFPKM:", initialTableWithFPKM,
               " does not have any column name begining by FPKM_. No normalization will be performed.\n")

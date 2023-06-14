@@ -33,7 +33,7 @@ if (!exists("samplesPlan")) {
 if (!file.exists(samplesPlan)) {
   stop("The file specified as samplesPlan does not exist:", samplesPlan)
 }
-samplesPlanDF <- read.delim(samplesPlan)
+samplesPlanDF <- read.delim(samplesPlan, check.names = FALSE)
 if (!("sample" %in% colnames(samplesPlanDF))) {
   stop("The samplesPlan table do not contain a column called \"sample\".")
 }
@@ -45,7 +45,7 @@ if (!exists("tableWithCounts")) {
 if (!file.exists(tableWithCounts)) {
   stop("The file specified as tableWithCounts:", tableWithCounts, "does not exists.")
 }
-htseqCounts <- read.delim(tableWithCounts)
+htseqCounts <- read.delim(tableWithCounts, check.names = FALSE)
 
 if (!"Ens_ID" %in% colnames(htseqCounts)) {
   if (!exists("geneIDColCounts")) {
@@ -143,7 +143,7 @@ resOrdered <- res[order(res$padj), ]
 
 if (exists("tableWithAnnotations")) {
   if (file.exists(tableWithAnnotations)) {
-    ann <- read.delim(tableWithAnnotations)
+    ann <- read.delim(tableWithAnnotations, check.names = FALSE)
     if (exists("geneIDColInAnnotations")) {
       if (!geneIDColInAnnotations %in% colnames(ann)) {
         cat("The geneIDColInAnnotations provided: ", geneIDColInAnnotations,
@@ -207,7 +207,7 @@ if (exists("annot.df")) {
     ], resOrdered)
 } else {
   resToExport <- data.frame(Ens_ID = rownames(resOrdered), counts(dds, normalized = TRUE)[rownames(resOrdered),
-    ], resOrdered)
+    ], resOrdered, check.names = FALSE)
 }
 
 if (exists("outputDESeqTable")) {

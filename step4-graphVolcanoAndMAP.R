@@ -41,7 +41,7 @@ if (!file.exists(tableWithResultsOfDifferentialExpression)) {
     "does not exists.")
 }
 
-df <- read.delim(tableWithResultsOfDifferentialExpression)
+df <- read.delim(tableWithResultsOfDifferentialExpression, check.names = FALSE)
 
 if (!all(c("padj", "log2FoldChange") %in% colnames(df))) {
   stop("The file do not contains padj and log2FoldChange column names.")
@@ -134,7 +134,7 @@ if (exists("click")) {
 
 if (exists("fileWithGenes")) {
   if (file.exists(fileWithGenes)) {
-    dfGene <- read.delim(fileWithGenes)
+    dfGene <- read.delim(fileWithGenes, check.names = FALSE)
     # colOfGeneID indicates in which column the gene list should be look for
     colOfGeneID <- colnames(dfGene)[1]
     if (!(colOfGeneID %in% colnames(df))) {

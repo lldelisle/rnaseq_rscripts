@@ -85,11 +85,11 @@ mergeFPKM_function <- function(samplesPlanDF, sumDup = F, colToKeep = c("gene_id
     simplified_meta <- data.frame(gene_id = simplified$Group.1)
     if ("gene_short_name" %in% colToKeep) {
       simplified_meta <- data.frame(simplified_meta, gene_short_name = FPKMCuff$gene_short_name[match(simplified$Group.1,
-        FPKMCuff$gene_id)])
+        FPKMCuff$gene_id)], check.names = FALSE)
     }
     if ("locus" %in% colToKeep) {
       simplified_meta <- data.frame(simplified_meta, locus = FPKMCuff$locus[match(simplified$Group.1,
-        FPKMCuff$gene_id)])
+        FPKMCuff$gene_id)], check.names = FALSE)
       # For the gene_id that were duplicated the locus is modified to take into
       # account all transcripts
       dup <- FPKMCuff$gene_id[duplicated((FPKMCuff$gene_id))]
@@ -107,7 +107,7 @@ mergeFPKM_function <- function(samplesPlanDF, sumDup = F, colToKeep = c("gene_id
       simplified_meta$locus[match(locusToPutBack$ensID, simplified_meta$gene_id)] <- locusToPutBack[,
         2]
     }
-    simplified <- data.frame(simplified_meta, simplified[, 2:ncol(simplified)])
+    simplified <- data.frame(simplified_meta, simplified[, 2:ncol(simplified)], check.names = FALSE)
     return(simplified)
   } else {
     return(FPKMCuff)
@@ -195,7 +195,7 @@ normalizeHKRank <- function(FPKMCuff, nbgenes, chrToRm = c("chrM")) {
   }
 
   FPKMCuff.norm <- data.frame(FPKMCuff[, grep("FPKM_", colnames(FPKMCuff), invert = T)],
-    t(t(FPKMCuff[, grep("FPKM_", colnames(FPKMCuff))])/normcoeff))
+    t(t(FPKMCuff[, grep("FPKM_", colnames(FPKMCuff))])/normcoeff), check.names = FALSE)
 
   results <- list(hkgenesName = hkgenesName, hkgenesENSID = hkgenesEnsID, normcoeff = normcoeff,
     normData = FPKMCuff.norm)
