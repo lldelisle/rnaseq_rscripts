@@ -341,3 +341,92 @@ getAddPara <- function(listOfPara, proposedColors) {
   }
   return(addPara)
 }
+
+# Wrapper for DESeq2
+deseqAnaWithCovariates <- function(count.table, factorForAna, covariates,
+                                   pathOutput, samplesPlan, LRT = FALSE, pvalT = 0.05,
+                                   lfcT = 1.5, writeRLOG = FALSE, gene_id = "gene_id", ...) {
+  # Checking the conditions
+  if (!(factorForAna %in% colnames(samplesPlan))) {
+    stop("The factor is is not part of the column names.")
+  }
+  if (!is.null(covariates) && !(all(unlist(covariates) %in% colnames(samplesPlan)))) {
+    stop("Not all covariates are part of the column names.")
+  }
+  if (length(levels(samplesPlan[, factorForAna])) == 1) {
+    stop("The factor you chose have only 1 value. The analysis is not possible.")
+  }
+  if (length(levels(samplesPlan[, factorForAna])) > 2 && !LRT) {
+    print("The factor you chose have more than 2 values. LRT will be applied.")
+    LRT <- TRUE
+  }
+  # Lauching DESeq2
+  dds <- DESeqDataSetFromMatrix(countData = count.table[, match(rownames(samplesPlan), colnames(count.table))],
+                                colData = samplesPlan,
+                                design = as.formula(paste0("~",
+                                  paste(c(unlist(covariates),
+                                          factorForAna),
+                                        collapse = " + ")
+                                )))
+  print("Design is:")
+  print(design(dds))
+  print("Genes that are never expressed are removed")
+  dds <- dds[rowSums(counts(dds)) > 1, ]
+  if (LRT) {
+    # Here I am really not sure about the reduced
+    reduced.formula <- as.formula("~1")
+    if (!is.null(covariates)) {
+      reduced.formula <- as.formula(paste0("~", paste(unlist(covariates), collapse = " + ")))
+    }
+    dds <- DESeq(dds, minReplicatesForReplace = Inf, test = "LRT", reduced = reduced.formula)
+  } else {
+    dds <- DESeq(dds, minReplicatesForReplace = Inf)
+  }
+  res <- results(dds, ...)
+  resOrdered <- res[order(res$padj), ]
+  # Subsetting the annotation file
+  ann <- subset(
+    count.table,
+    select = intersect(colnames(count.table),
+                       c(gene_id, "gene_id", "gene_short_name", "locus"))
+  )
+  rownames(ann) <- ann[, gene_id]
+  resToExport <- data.frame(
+    ann[rownames(resOrdered), ],
+    counts(dds, normalized = TRUE)[rownames(resOrdered), ],
+    resOrdered,
+    check.names = FALSE
+  )
+  if (ncol(ann) == 1) {
+    colnames(resToExport)[1] <- colnames(ann)
+  }
+  write.table(
+    resToExport,
+    file = paste0(pathOutput, "DESeq2Results.txt"),
+    sep = "\t", row.names = FALSE, quote = FALSE
+  )
+  dfDiffExp <- subset(resToExport, resToExport$padj < pvalT & abs(resToExport$log2FoldChange) > lfcT)
+  write.table(
+    dfDiffExp,
+    file = paste0(pathOutput, "DESeq2significant.txt"),
+    sep = "\t", row.names = FALSE, quote = FALSE
+  )
+  rld <- rlog(dds)
+  rlogdata <- assay(rld)
+  if (writeRLOG) {
+    resToExport2 <- data.frame(
+      ann[rownames(resOrdered), ],
+      rlogdata[rownames(resOrdered), ],
+      check.names = FALSE
+    )
+    if (ncol(ann) == 1) {
+      colnames(resToExport2)[1] <- colnames(ann)
+    }
+    write.table(
+      resToExport2,
+      file = paste0(pathOutput, "rlog.txt"),
+      sep = "\t", row.names = FALSE, quote = FALSE
+    )
+  }
+  return(invisible(dfDiffExp))
+}

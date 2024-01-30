@@ -22,10 +22,10 @@ cd ~/rnaseq_rscripts
 mkdir data
 cd data
 for sample in atR5259AP atR5260AP atR5260PL atR5276AP atR5276PL atR5278AP atR5279AP atR5279PL  atR5280AP; do
-    curl -O https://www.zenodo.org/record/3562052/files/FPKM_${sample}.txt
-    curl -O https://www.zenodo.org/record/3562052/files/htseqCount_${sample}.txt
+    curl -L -O https://www.zenodo.org/record/3562052/files/FPKM_${sample}.txt
+    curl -L -O https://www.zenodo.org/record/3562052/files/htseqCount_${sample}.txt
 done
-curl -O https://www.zenodo.org/record/3562052/files/mergeOverlapGenesOfFilteredTranscriptsOfMus_musculus.GRCm38.94_ExonsOnly_UCSC_withIsland3.gtf.gz
+curl -L -O https://www.zenodo.org/record/3562052/files/mergeOverlapGenesOfFilteredTranscriptsOfMus_musculus.GRCm38.94_ExonsOnly_UCSC_withIsland3.gtf.gz
 cd ..
 ```
 
@@ -108,6 +108,91 @@ You should ave 131 genes in the file `~/rnaseq_rscripts/outputs/DESeq2/Significa
 Now we can do some informative plots.
 
 We would like to see the genes which are around the deletion to see how they are affected.
+
+## Launch the second script for batch
+
+If you want to do more than one comparison, it can be interesting to run the version 'multi' of the second script.
+
+Either you use command line:
+```
+Rscript ~/rnaseq_rscripts/step2-multi_DESeq2.R ~/rnaseq_rscripts/example/configFileRNAseq_step2multi.R 
+```
+
+Or you open step2-multi_DESeq2.R in RStudio, click on the source button (top right).
+
+The output I get is:
+```
+[1] "FACTOR TO STUDY"
+[1] "Line"
+[1] "LOOPING VARIABLE"
+[1] "Line"
+[1] "SUBSET"
+[1] "Tissue"
+[1] "Line_DFL_del(attP-Rel5)d9lacvsWt_"
+                               sample                Line Tissue Replicate
+at_R5_DFL_260_Wt     at_R5_DFL_260_Wt                  Wt    DFL         1
+at_R5_DFL_276_Wt     at_R5_DFL_276_Wt                  Wt    DFL         2
+at_R5_DFL_279_Wt     at_R5_DFL_279_Wt                  Wt    DFL         3
+at_R5_DFL_259_atR5 at_R5_DFL_259_atR5 del(attP-Rel5)d9lac    DFL         1
+at_R5_DFL_278_atR5 at_R5_DFL_278_atR5 del(attP-Rel5)d9lac    DFL         2
+at_R5_DFL_280_atR5 at_R5_DFL_280_atR5 del(attP-Rel5)d9lac    DFL         3
+  Note: levels of factors in the design contain characters other than
+  letters, numbers, '_' and '.'. It is recommended (but not required) to use
+  only letters, numbers, and delimiters '_' or '.', as these are safe characters
+  for column names in R. [This is a message, not a warning or an error]
+[1] "Design is:"
+~Line
+<environment: 0x55f23b1319c0>
+[1] "Genes that are never expressed are removed"
+estimating size factors
+  Note: levels of factors in the design contain characters other than
+  letters, numbers, '_' and '.'. It is recommended (but not required) to use
+  only letters, numbers, and delimiters '_' or '.', as these are safe characters
+  for column names in R. [This is a message, not a warning or an error]
+estimating dispersions
+gene-wise dispersion estimates
+mean-dispersion relationship
+  Note: levels of factors in the design contain characters other than
+  letters, numbers, '_' and '.'. It is recommended (but not required) to use
+  only letters, numbers, and delimiters '_' or '.', as these are safe characters
+  for column names in R. [This is a message, not a warning or an error]
+final dispersion estimates
+fitting model and testing
+[1] "FACTOR TO STUDY"
+[1] "Tissue"
+[1] "LOOPING VARIABLE"
+[1] "Tissue"
+[1] "SUBSET"
+[1] "Line"
+[1] "Tissue_Wt_PFLvsDFL_"
+                           sample Line Tissue Replicate
+at_R5_DFL_260_Wt at_R5_DFL_260_Wt   Wt    DFL         1
+at_R5_DFL_276_Wt at_R5_DFL_276_Wt   Wt    DFL         2
+at_R5_DFL_279_Wt at_R5_DFL_279_Wt   Wt    DFL         3
+at_R5_PFL_260_Wt at_R5_PFL_260_Wt   Wt    PFL         1
+at_R5_PFL_276_Wt at_R5_PFL_276_Wt   Wt    PFL         2
+at_R5_PFL_279_Wt at_R5_PFL_279_Wt   Wt    PFL         3
+[1] "Design is:"
+~Tissue
+<environment: 0x55f24b7185d0>
+[1] "Genes that are never expressed are removed"
+estimating size factors
+estimating dispersions
+gene-wise dispersion estimates
+mean-dispersion relationship
+final dispersion estimates
+fitting model and testing
+Reading gtf file...Done
+```
+
+The messages regarding the characters is due to the fact that we used parenthesis in the Line column of the samplesplan. As it is written, this is just a message and you can ignore it.
+
+The outputs are:
+
+- For each comparison, like the output of the regular step2 (one file with all results and one with 'significant').
+- A file 'summary.txt' where each line is a gene, then for each gene the log2fc, padj and whether it is significant (very convenient to have a summary on each gene).
+- A file 'summary_long.txt' where each line is a gene into one analysis, useful to do ggplots.
+
 
 ## Launch the third script
 Either you use command line:
