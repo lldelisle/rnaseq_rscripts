@@ -184,6 +184,12 @@ for (factorToStudy in names(all.analyses)) {
       all.res.fmt$subsetting <- subsetting.name
       all.res.fmt$value <- my.value
       all.res.fmt$ref.value <- ref.value
+      if (!is.null(ref.value) & !"ref.value" %in% colnames(big.annot2)) {
+        big.annot2$ref.value <- NA
+      }
+      if (is.null(ref.value) & "ref.value" %in% colnames(big.annot2)) {
+        all.res.fmt$ref.value <- NA
+      }
       big.annot2 <- rbind(big.annot2, all.res.fmt)
       tail(big.annot2)
     }
