@@ -2,6 +2,7 @@
 RNAseqFunctionPath <- "~/rnaseq_rscripts/RNAseqFunctions.R"
 # This file should be a tabulated file with at least one column called
 # 'sample'.
+# At this step it is super important to put the samples reference for your comparison before the others.
 samplesPlan <- "~/rnaseq_rscripts/example/samplesPlan.txt"
 
 #### STEP 2 - DESEQ 2 ANALYSIS ####
@@ -10,8 +11,11 @@ tableWithCounts <- "~/rnaseq_rscripts/outputs/mergedTables/AllHTSeqCounts_subset
 # Specify here the name of the column which contains the gene IDs (they need to
 # be unique).
 geneIDColCounts <- "Ens_ID"
-# For the DESeq2 analysis you need to specify a factor on which you want to do
-# the analysis: This needs to be a name of a column of the samplesPlan file.
+# For the DESeq2 analysis you need to specify a factor on which
+# you want to do the analysis:
+# This needs to be a name of a column of the samplesPlan file.
+# The reference will be defined as the first value of this column
+# among the subsetted samples.
 # Here you want to do multiple analyses at once.
 # You describe all what you want into the variable 'all.anayses':
 # list(factorToStudy = list(loopingVariable = list(subsetting)))
