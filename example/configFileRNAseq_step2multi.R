@@ -19,13 +19,37 @@ geneIDColCounts <- "Ens_ID"
 # Here you want to do multiple analyses at once.
 # You describe all what you want into the variable 'all.anayses':
 # list(factorToStudy = list(loopingVariable = list(subsetting)))
+
+# First super simple example:
+# You want to compare all to a reference:
+# all.analyses <- list("Condition" = list("Condition" = list()))
+# The reference will be the first value in the "Condition" column.
+# All pairwise comparisons between the different values
+# of the "Condition" column and
+# the first value in the "Condition" column will be computed.
+
+# Second example:
+# You want to compare mutant to WT among DFL samples
+# And you want to compare PFL to DFL amount wt samples
 all.analyses <- list(
   "Line" = list("Line" = list("Tissue" = "DFL")),
   "Tissue" = list("Tissue" = list("Line" = "Wt"))
 )
-# First, using Line as factor, for each Line which is not the reference (here there is only one but there could be more), using only samples where Tissue is DFL.
-# Then, using Tissue as factor, for each Tissue which is not the reference (here only one), using only samples where Line is Wt.
+# How the software will imprete this:
+# First,
+#   using Line as factor,
+#   for each Line which is not the reference = first in samplesplan
+#   (here there is only one but there could be more),
+#   using only samples where Tissue is DFL.
+#
+# Then,
+#   using Tissue as factor,
+#   for each Tissue which is not the reference = first in samplesplan
+#   (here only one),
+#   using only samples where Line is Wt.
 
+# Third example:
+# Compare mutant to wt but in each tissue separately:
 # all.analyses <- list(
 #   "Line" = list(
 #     "Line" = list("Tissue" = "Limbs"),
@@ -33,12 +57,19 @@ all.analyses <- list(
 #   )
 # )
 # In the given example, it will use the factor 'Line' and do:
-# 1. For each Line which is not the reference (first one in samples plan), comparison to the reference using only samples where Tissue is Limbs.
-# 2. For each Line which is not the reference (first one in samples plan), comparison to the reference using only samples where Tissue is Trunk.
+# 1.
+#    For each Line which is not the reference (first one in samples plan),
+#    comparison to the reference
+#    using only samples where Tissue is Limbs.
+# 2.
+#    For each Line which is not the reference (first one in samples plan),
+#    comparison to the reference
+#    using only samples where Tissue is Trunk.
 
 
 # Optional
 # This can be table from cufflinks or cuffdiff or Biomart to annotate genes.
+# This will be only added to the 2 final output files (summary.txt and all_summary.txt)
 # You will need to choose a file with at least one column with the Ensembl Gene IDs.
 tableWithAnnotations <- "~/rnaseq_rscripts/outputs/mergedTables/AllCufflinks_Simplified_norm.txt"
 # Specify here the name of the column which contains the gene IDs (it must
