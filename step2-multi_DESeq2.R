@@ -65,7 +65,7 @@ if (!"Ens_ID" %in% colnames(htseqCounts)) {
 rownames(htseqCounts) <- htseqCounts$Ens_ID
 
 # The samplesplan may contain more values than the htseqCounts
-sampleNamesWithValues <- intersect(colnames(htseqCounts), samplesPlanDF$sample)
+sampleNamesWithValues <- intersect(samplesPlanDF$sample, colnames(htseqCounts))
 if (length(sampleNamesWithValues) < 2) {
   cat("Samples in samplesplan are \n")
   cat(samplesPlanDF$sample)

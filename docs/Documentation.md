@@ -116,6 +116,43 @@ In the output table you have:
  
 It is ordered by increasing adjusted p-value.
 
+## step2multi
+### Goal
+This variation of the second script do the differential analysis with DESeq2 for multiple pairwise comparisons in a single script.
+
+### Prepare the config file
+I highly recommand to use the template configFileRNAseq_step2_DFL.R in the example folder.
+- RNAseqFunctionPath: put the path for the script `RNAseqFunctions.R`
+- samplesPlan: put the path for the samples plan file which correspond to your experiment (which can be smaller than the original samplesPlan). At this step it is super important to put the samples reference for your comparison before the others.
+- tableWithCounts: put the path for the table with all counts (one column per sample called by the name of the sample and a column for gene identification). You can use AllHTSeqCounts.txt or AllHTSeqCounts_subset.txt if you want to exclude some genes/chr from analysis. You can also use [this script](https://github.com/lldelisle/toolBoxForMutantAndWTGenomes/blob/main/scripts/subsetForProteinCoding.R) if you want to compute DESeq2 only on protein coding genes.
+- geneIDColCounts: If the table was not provided by step1. Put here the name of the column for gene identification.
+- all.analyses: this describes all pairwise analyses you want to do. I recommand to check the template configFile to see examples.
+- pathForDESeq2: put the path of the directory where you want to have the output files of the script.
+- log2FC.threshold: The threshold to consider a gene as significant (appear into a separate table and be TRUE or FALSE into the final tables).
+- By default, the output tables contains only the ensembl id to identify genes. It can be useful to add more information. To do so, you have different options:
+    - gtfFile: provide the path for a gtf file, you will get coordinates, gene_biotype and gene_name.
+    - tableWithAnnotations: provide the path for a table with at least one column with the ensembl ids. It can be the FPKM table or a table from biomart.
+    - geneIDColInAnnotations: If you provided a tableWithAnnotations, put here the name of the column which contains the ensembl ids.
+
+### Launch it
+Either you use command line:
+```
+Rscript ~/rnaseq_rscripts/step2-multi_DESeq2.R ~/rnaseq_rscripts/example/configFileRNAseq_step2multi.R 
+```
+
+Or you open step2-multi_DESeq2.R in RStudio, click on the source button (top right).
+A window will be opened and you will need to choose the config file.
+You will see messages or errors.
+When you see back the `>` symbol. This means it is done.
+
+### Description of outputs
+
+The outputs are:
+
+- For each comparison, like the output of the regular step2 (one file with all results and one with 'significant', see above for the description of each column).
+- A file 'summary.txt' where each line is a gene, then for each gene the log2fc, padj and whether it is significant (very convenient to have a summary on each gene).
+- A file 'summary_long.txt' where each line is a gene into one analysis, useful to do ggplots.
+
 ## step3
 ### Goal
 The third script do three plots: PCA, Clustering and gene expession.

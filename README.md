@@ -7,5 +7,7 @@ A full documentation is available [here](./docs/Documentation.md)
 
 An example of analysis is available [here](./docs/ExampleStepByStep.md) where you can see examples of plots you can get.
 
+If you directly want to start your analysis go [here](./docs/Start.md).
+
 ## Issues
 If you have any issue/question/remark, feel free to open an issue in github or send me an email to lucille.delisle\@epfl.ch

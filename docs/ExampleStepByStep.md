@@ -1,12 +1,14 @@
 # An example step by step
 This is a tutorial to run the example.
 
-## Clone the git repository
+## Clone the git repository or download the full repository
 In your home folder. Open a terminal and clone the repository:
 ```bash
 cd ~
 git clone https://github.com/lldelisle/rnaseq_rscripts.git
 ```
+Alternatively, you can simply download the repository:
+![download](./download.png)
 
 ## Download the inputs:
 
