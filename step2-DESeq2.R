@@ -184,13 +184,16 @@ if (exists("gtfFile")) {
     cat("Done\n")
     start <- aggregate(gtf$start - 1, by = list(gene_id = gtf$gene_id), FUN = min)
     end <- aggregate(gtf$end, by = list(gene_id = gtf$gene_id), FUN = max)
-    gtf <- unique(gtf[, c("seqid", "strand", "gene_id", "gene_name", "gene_biotype")])
+    gtf.columns <- intersect(
+      c("seqid", "strand", "gene_id", "gene_name", "gene_biotype", "gene_type"),
+      colnames(gtf)
+    )
+    gtf <- unique(gtf[, gtf.columns])
 
     annot.gtf <- gtf[match(rownames(resOrdered), gtf$gene_id), ]
     annot.gtf$start <- start$x[match(rownames(resOrdered), start$gene_id)]
     annot.gtf$end <- end$x[match(rownames(resOrdered), end$gene_id)]
-    annot.gtf <- annot.gtf[, c("gene_id", "seqid", "start", "end", "strand",
-      "gene_name", "gene_biotype")]
+    annot.gtf <- annot.gtf[, c(gtf.columns, "start", "end")]
     if (exists("annot.df")) {
       annot.df <- cbind(annot.gtf, annot.df[, setdiff(colnames(annot.df), geneIDColInAnnotations)])
     } else {
