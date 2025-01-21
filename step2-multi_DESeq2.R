@@ -241,15 +241,15 @@ if (exists("gtfFile")) {
     cat("Done\n")
     start <- aggregate(list(start = gtf$start - 1), by = list(gene_id = gtf$gene_id), FUN = min)
     end <- aggregate(list(end = gtf$end), by = list(gene_id = gtf$gene_id), FUN = max)
-    gtf <- unique(gtf[, c("seqid", "strand", "gene_id", "gene_name", "gene_biotype")])
+    gtf.columns <- intersect(
+      c("seqid", "strand", "gene_id", "gene_name", "gene_biotype", "gene_type"),
+      colnames(gtf)
+    )
+    gtf <- unique(gtf[, gtf.columns])
 
     annot.gtf <- merge(gtf, start)
     annot.gtf <- merge(annot.gtf, end)
-
-    annot.gtf <- annot.gtf[, c(
-      "gene_id", "seqid", "start", "end", "strand",
-      "gene_name", "gene_biotype"
-    )]
+    annot.gtf <- annot.gtf[, c(gtf.columns, "start", "end")]
     colnames(annot.gtf)[1] <- "Ens_ID"
     if (exists("annot.df")) {
       annot.df <- merge(annot.gtf, annot.df, all = TRUE)
