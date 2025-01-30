@@ -242,7 +242,7 @@ if (exists("gtfFile")) {
     start <- aggregate(list(start = gtf$start - 1), by = list(gene_id = gtf$gene_id), FUN = min)
     end <- aggregate(list(end = gtf$end), by = list(gene_id = gtf$gene_id), FUN = max)
     gtf.columns <- intersect(
-      c("seqid", "strand", "gene_id", "gene_name", "gene_biotype", "gene_type"),
+      c("gene_id", "seqid", "strand", "gene_name", "gene_biotype", "gene_type"),
       colnames(gtf)
     )
     gtf <- unique(gtf[, gtf.columns])
