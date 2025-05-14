@@ -2,7 +2,7 @@
 RNAseqFunctionPath <- "~/rnaseq_rscripts/RNAseqFunctions.R"
 # This file should be a tabulated file with at least one column called
 # 'sample'.
-samplesPlan <- "~/rnaseq_rscripts/example/samplesPlan.txt"
+samplesPlan <- "~/rnaseq_rscripts/example/samplesPlanDFL.txt"
 
 #### STEP 2 - DESEQ 2 ANALYSIS ####
 # Required
