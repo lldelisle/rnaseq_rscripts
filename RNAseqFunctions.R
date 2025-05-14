@@ -411,9 +411,9 @@ deseqAnaWithCovariates <- function(count.table, factorForAna, covariates,
     file = paste0(pathOutput, "DESeq2significant.txt"),
     sep = "\t", row.names = FALSE, quote = FALSE
   )
-  rld <- rlog(dds)
-  rlogdata <- assay(rld)
   if (writeRLOG) {
+    rld <- rlog(dds)
+    rlogdata <- assay(rld)
     resToExport2 <- data.frame(
       ann[rownames(resOrdered), ],
       rlogdata[rownames(resOrdered), ],
