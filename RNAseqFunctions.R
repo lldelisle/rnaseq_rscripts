@@ -353,10 +353,10 @@ deseqAnaWithCovariates <- function(count.table, factorForAna, covariates,
   if (!is.null(covariates) && !(all(unlist(covariates) %in% colnames(samplesPlan)))) {
     stop("Not all covariates are part of the column names.")
   }
-  if (length(levels(samplesPlan[, factorForAna])) == 1) {
+  if (length(unique(samplesPlan[, factorForAna])) == 1) {
     stop("The factor you chose have only 1 value. The analysis is not possible.")
   }
-  if (length(levels(samplesPlan[, factorForAna])) > 2 && !LRT) {
+  if (length(unique(samplesPlan[, factorForAna])) > 2 && !LRT) {
     print("The factor you chose have more than 2 values. LRT will be applied.")
     LRT <- TRUE
   }
