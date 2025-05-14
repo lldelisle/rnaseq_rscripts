@@ -105,7 +105,21 @@ The result table with significants is written in  /home/ldelisle/rnaseq_rscripts
 The messages regarding the characters is due to the fact that we used parenthesis in the Line column of the samplesplan. As it is written, this is just a message and you can ignore it.
 
 You can open the new files in excel.
-You should ave 131 genes in the file `~/rnaseq_rscripts/outputs/DESeq2/Significant_DESeq2AnalysisDFLPerGeno.txt`.
+You should have 131 genes in the file `~/rnaseq_rscripts/outputs/DESeq2/Significant_DESeq2AnalysisDFLPerGeno.txt`.
+
+If you want to filter for FPKM you can use the second config file.
+
+Either you use command line:
+```
+Rscript ~/rnaseq_rscripts/step2-DESeq2.R ~/rnaseq_rscripts/example/configFileRNAseq_step2_DFL_FPKM_filter.R
+```
+
+Or you open step2-DESeq2.R in RStudio, click on the source button (top right).
+
+You can open the new files in excel.
+You should have 74 genes in the file `~/rnaseq_rscripts/outputs/DESeq2_FPKM_filter/Significant_DESeq2AnalysisDFLPerGeno.txt`.
+
+Instead of testing 25416 genes you only test 12715 genes.
 
 Now we can do some informative plots.
 
@@ -116,6 +130,7 @@ We would like to see the genes which are around the deletion to see how they are
 If you want to do more than one comparison, it can be interesting to run the version 'multi' of the second script.
 
 Either you use command line:
+
 ```
 Rscript ~/rnaseq_rscripts/step2-multi_DESeq2.R ~/rnaseq_rscripts/example/configFileRNAseq_step2multi.R 
 ```

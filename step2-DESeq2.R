@@ -60,6 +60,23 @@ if (!"Ens_ID" %in% colnames(htseqCounts)) {
   }
 }
 
+if (!exists("tableWithFPKM")) {
+  fpkm.table <- NULL
+} else if (!file.exists(tableWithFPKM)) {
+  stop("The file specified as tableWithFPKM:", tableWithFPKM, "does not exists.")
+} else {
+  fpkm.table <- read.delim(tableWithFPKM, check.names = FALSE)
+  if (!"gene_id" %in% colnames(fpkm.table)) {
+    stop("gene_id is not part of the column names of the FPKM table")
+  }
+  rownames(fpkm.table) <- fpkm.table$gene_id
+  if (!exists("min.mean.FPKM")) {
+    min.mean.FPKM <- 1
+  } else if (!is.numeric(min.mean.FPKM)) {
+    stop("min.mean.FPKM must be numeric.")
+  }
+}
+
 # The samplesplan may contain more values than the htseqCounts
 sampleNamesWithValues <- intersect(colnames(htseqCounts), samplesPlanDF$sample)
 if (length(sampleNamesWithValues) < 2) {
@@ -115,12 +132,33 @@ if (sum(is.na(htseqCounts)) > 0) {
   htseqCounts[is.na(htseqCounts)] <- 0
 }
 
-cmd <- paste("dds <- DESeqDataSetFromMatrix(countData = htseqCounts[,match(rownames(simplifiedSP),colnames(htseqCounts))], colData = simplifiedSP, design = ~ ",
+cmd <- paste("dds <- DESeqDataSetFromMatrix(countData = htseqCounts[,rownames(simplifiedSP)], colData = simplifiedSP, design = ~ ",
   factor, ")", sep = "")
 eval(parse(text = cmd))
-cat("Genes that are never expressed are removed\n")
-dds <- dds[rowSums(counts(dds)) > 1, ]
 
+# Filtering:
+if (is.null(fpkm.table)) {
+  cat("Genes that are never expressed are removed.\n")
+  dds <- dds[rowSums(counts(dds)) > 1, ]
+} else {
+  fpkm.means <- NULL
+  for (factorValue in unique(simplifiedSP[, factor])) {
+    current.samples <- rownames(
+      subset(simplifiedSP,
+             simplifiedSP[, factor] == factorValue)
+    )
+    fpkm.means <- cbind(fpkm.means, rowMeans(fpkm.table[, paste0("FPKM_", current.samples)]))
+  }
+  colnames(fpkm.means) <- paste0("FPKM_mean_", unique(simplifiedSP[, factor]))
+  rownames(fpkm.means) <- rownames(fpkm.table)
+  fpkm.means.max <- apply(fpkm.means, 1, max)
+  genes.to.keep <- intersect(
+    names(fpkm.means.max[fpkm.means.max > min.mean.FPKM]),
+    rownames(dds)[rowSums(counts(dds)) > 1]
+  )
+  cat(paste("Genes with average FPKM per group below", min.mean.FPKM, " in all groups are removed.\n"))
+  dds <- dds[genes.to.keep, ]
+}
 if (exists("changeTest")) {
   if (!is.logical(changeTest)) {
     cat("The value provided in changeTest is not logical. The default test (Wald will be used.\n)")
@@ -211,6 +249,13 @@ if (exists("annot.df")) {
 } else {
   resToExport <- data.frame(Ens_ID = rownames(resOrdered), counts(dds, normalized = TRUE)[rownames(resOrdered),
     ], resOrdered, check.names = FALSE)
+}
+
+if (!is.null(fpkm.table)) {
+  resToExport <- cbind(
+    resToExport,
+    fpkm.means[rownames(resOrdered), ]
+  )
 }
 
 if (exists("outputDESeqTable")) {

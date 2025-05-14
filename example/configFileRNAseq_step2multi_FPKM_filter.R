@@ -69,9 +69,8 @@ all.analyses <- list(
 
 # Optional
 # If you want to filter genes based on a minimal FPKM mean value in at least one group
-# Uncomment and update the path:
-# tableWithFPKM <- "~/rnaseq_rscripts/outputs/mergedTables/AllCufflinks_Simplified.txt"
-# min.mean.FPKM <- 1
+tableWithFPKM <- "~/rnaseq_rscripts/outputs/mergedTables/AllCufflinks_Simplified.txt"
+min.mean.FPKM <- 1
 
 # This can be table from cufflinks or cuffdiff or Biomart to annotate genes.
 # This will be only added to the 2 final output files (summary.txt and all_summary.txt)
@@ -84,6 +83,6 @@ geneIDColInAnnotations <- "gene_id"
 gtfFile <- "~/rnaseq_rscripts/data/mergeOverlapGenesOfFilteredTranscriptsOfMus_musculus.GRCm38.94_ExonsOnly_UCSC_withIsland3.gtf.gz"
 
 # A directory with outputs
-pathForDESeq2 <- "~/rnaseq_rscripts/outputs/DESeq2_multi/"
+pathForDESeq2 <- "~/rnaseq_rscripts/outputs/DESeq2_multi_FPKM_filter/"
 # Set the threshold for significance here
 log2FC.threshold <- log2(1.5)

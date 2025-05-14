@@ -90,6 +90,9 @@ I highly recommand to use the template configFileRNAseq_step2_DFL.R in the examp
     - gtfFile: provide the path for a gtf file, you will get coordinates, gene_biotype and gene_name.
     - tableWithAnnotations: provide the path for a table with at least one column with the ensembl ids. It can be the FPKM table or a table from biomart.
     - geneIDColInAnnotations: If you provided a tableWithAnnotations, put here the name of the column which contains the ensembl ids.
+- By default, only genes with at least 2 counts in total are considered for testing. If you want to be more stringent, you can provide:
+  - tableWithFPKM: put the path for the table with all FPKM (one column per sample called by 'FPKM_' followed by the name of the sample and a column 'gene_id'). You can use AllCufflinks_Simplified.txt.
+  - min.mean.FPKM: minimum value of mean FPKM in at least one group to be considered (default is 1).
 
 ### Launch it
 Either you use command line:
@@ -133,6 +136,9 @@ I highly recommand to use the template configFileRNAseq_step2_DFL.R in the examp
     - gtfFile: provide the path for a gtf file, you will get coordinates, gene_biotype and gene_name.
     - tableWithAnnotations: provide the path for a table with at least one column with the ensembl ids. It can be the FPKM table or a table from biomart.
     - geneIDColInAnnotations: If you provided a tableWithAnnotations, put here the name of the column which contains the ensembl ids.
+- By default, only genes with at least 2 counts in total are considered for testing. If you want to be more stringent, you can provide:
+  - tableWithFPKM: put the path for the table with all FPKM (one column per sample called by 'FPKM_' followed by the name of the sample and a column 'gene_id'). You can use AllCufflinks_Simplified.txt.
+  - min.mean.FPKM: minimum value of mean FPKM in at least one group to be considered (default is 1).
 
 ### Launch it
 Either you use command line:

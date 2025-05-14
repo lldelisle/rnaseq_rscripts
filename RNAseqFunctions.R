@@ -7,23 +7,23 @@ mergeCounts_function <- function(samplesPlanDF) {
       paste0(getwd(), "/htseqCount_", s, ".txt")
     })
   }
-
+  
   samplesPlanDF$htseq_count_file_exists <- sapply(samplesPlanDF$htseq_count_file,
-    file.exists)
-
+                                                  file.exists)
+  
   for (i in which(!samplesPlanDF$htseq_count_file_exists)) {
     cat("The file with counts values for", samplesPlanDF$sample[i], ":", samplesPlanDF$htseq_count_file[i],
-      "does not exist. The sample is omitted.\n")
+        "does not exist. The sample is omitted.\n")
   }
-
+  
   samplesPlanDF <- subset(samplesPlanDF, htseq_count_file_exists)
-
+  
   # They are all merged
   for (i in 1:nrow(samplesPlanDF)) {
     NexthtseqCounts <- read.delim(samplesPlanDF$htseq_count_file[i], h = F, stringsAsFactors = F)
     if (ncol(NexthtseqCounts) == 1) {
       NexthtseqCounts <- read.delim(samplesPlanDF$htseq_count_file[i], h = F,
-        stringsAsFactors = F, sep = " ")
+                                    stringsAsFactors = F, sep = " ")
     }
     colnames(NexthtseqCounts) <- c("Ens_ID", samplesPlanDF$sample[i])
     if (!exists("htseqCounts")) {
@@ -40,7 +40,7 @@ mergeCounts_function <- function(samplesPlanDF) {
 }
 
 mergeFPKM_function <- function(samplesPlanDF, sumDup = F, colToKeep = c("gene_id",
-  "gene_short_name", "locus")) {
+                                                                        "gene_short_name", "locus")) {
   # This function will generate one table with all the FPKM values and the name
   # of the gene and the locus. If sumDup=F you can have different lines for one
   # gene_id. If sumDup=T all the values with the same gene_id will be summed
@@ -50,26 +50,26 @@ mergeFPKM_function <- function(samplesPlanDF, sumDup = F, colToKeep = c("gene_id
     cat("gene_id must be part of colToKeep. It is added.\n")
     colToKeep <- c("gene_id", colToKeep)
   }
-
+  
   if (!"cufflinks_file" %in% colnames(samplesPlanDF)) {
     samplesPlanDF$cufflinks_file <- sapply(samplesPlanDF$sample, function(s) {
       paste0(getwd(), "/FPKM_", s, ".txt")
     })
   }
-
+  
   samplesPlanDF$cufflinks_file_exists <- sapply(samplesPlanDF$cufflinks_file, file.exists)
-
+  
   for (i in which(!samplesPlanDF$cufflinks_file_exists)) {
     cat("The file with FPKM values for", samplesPlanDF$sample[i], ":", samplesPlanDF$cufflinks_file[i],
-      "does not exist. The sample is omitted.\n")
+        "does not exist. The sample is omitted.\n")
   }
-
+  
   samplesPlanDF <- subset(samplesPlanDF, cufflinks_file_exists)
-
+  
   # They are all merged
   for (i in 1:nrow(samplesPlanDF)) {
     NextFPKMCuff <- read.delim(samplesPlanDF$cufflinks_file[i], h = T, stringsAsFactors = F)[,
-      c(colToKeep, "FPKM")]
+                                                                                             c(colToKeep, "FPKM")]
     colnames(NextFPKMCuff) <- c(colToKeep, paste0("FPKM_", samplesPlanDF$sample[i]))
     if (!exists("FPKMCuff")) {
       FPKMCuff <- NextFPKMCuff
@@ -77,35 +77,35 @@ mergeFPKM_function <- function(samplesPlanDF, sumDup = F, colToKeep = c("gene_id
       FPKMCuff <- merge(FPKMCuff, NextFPKMCuff, all = T)
     }
   }
-
+  
   if (sumDup) {
     # If sumDup is asked the lines with the same gene_id will be summed
     simplified <- aggregate(FPKMCuff[, grep("FPKM", colnames(FPKMCuff))], by = list(FPKMCuff$gene_id),
-      FUN = sum, na.rm = T)
+                            FUN = sum, na.rm = T)
     simplified_meta <- data.frame(gene_id = simplified$Group.1)
     if ("gene_short_name" %in% colToKeep) {
       simplified_meta <- data.frame(simplified_meta, gene_short_name = FPKMCuff$gene_short_name[match(simplified$Group.1,
-        FPKMCuff$gene_id)], check.names = FALSE)
+                                                                                                      FPKMCuff$gene_id)], check.names = FALSE)
     }
     if ("locus" %in% colToKeep) {
       simplified_meta <- data.frame(simplified_meta, locus = FPKMCuff$locus[match(simplified$Group.1,
-        FPKMCuff$gene_id)], check.names = FALSE)
+                                                                                  FPKMCuff$gene_id)], check.names = FALSE)
       # For the gene_id that were duplicated the locus is modified to take into
       # account all transcripts
       dup <- FPKMCuff$gene_id[duplicated((FPKMCuff$gene_id))]
       dupFPKM <- FPKMCuff[FPKMCuff$gene_id %in% dup, c("gene_id", "locus")]
       ldup <- matrix(unlist(strsplit(unlist(strsplit(as.character(dupFPKM$locus),
-        ":")), "-")), ncol = 3, byrow = T)
+                                                     ":")), "-")), ncol = 3, byrow = T)
       minLoc <- aggregate(as.numeric(ldup[, 2]), by = list(dupFPKM$gene_id),
-        FUN = min, na.rm = T)
+                          FUN = min, na.rm = T)
       maxLoc <- aggregate(as.numeric(ldup[, 3]), by = list(dupFPKM$gene_id),
-        FUN = max, na.rm = T)
+                          FUN = max, na.rm = T)
       chrLoc <- ldup[match(minLoc$Group.1, dupFPKM$gene_id), 1]
       locusToPutBack <- data.frame(ensID = minLoc$Group.1, paste(chrLoc, paste(minLoc$x,
-        maxLoc$x[match(minLoc$Group.1, maxLoc$Group.1)], sep = "-"), sep = ":"),
-        stringsAsFactors = FALSE)
+                                                                               maxLoc$x[match(minLoc$Group.1, maxLoc$Group.1)], sep = "-"), sep = ":"),
+                                   stringsAsFactors = FALSE)
       simplified_meta$locus[match(locusToPutBack$ensID, simplified_meta$gene_id)] <- locusToPutBack[,
-        2]
+                                                                                                    2]
     }
     simplified <- data.frame(simplified_meta, simplified[, 2:ncol(simplified)], check.names = FALSE)
     return(simplified)
@@ -124,7 +124,7 @@ normalizeHKRank <- function(FPKMCuff, nbgenes, chrToRm = c("chrM")) {
   } else {
     rownames(expdata) <- paste(1:nrow(FPKMCuff), rep("NA", nrow(FPKMCuff)), sep = "__")
   }
-
+  
   if (!all(is.na(chrToRm))) {
     # I check that the rownames have info:
     if (!haveRowNames) {
@@ -142,68 +142,68 @@ normalizeHKRank <- function(FPKMCuff, nbgenes, chrToRm = c("chrM")) {
       }
     }
   }
-
+  
   ### get genes that are expressed in all samples
   expdata.nonzero <- expdata[which(apply(expdata, 1, min) > 0), ]
-
+  
   ## transform the expression levels into ranks
-
+  
   expdata.ranks <- apply(expdata.nonzero, 2, rank)
-
+  
   ## compute the variance of the ranks for each gene
-
+  
   expdata.ranks.var <- apply(expdata.ranks, 1, var, na.rm = T)
-
+  
   ## rank the genes according to their variance
-
+  
   expdata.nonzero.consrank <- rank(expdata.ranks.var)
-
+  
   ## compute the median rank over all samples, for each gene
-
+  
   median.rank <- apply(expdata.ranks, 1, median, na.rm = T)
-
+  
   ## get the genes which have a median rank in the 25%-75% range
-
+  
   interquartile <- median.rank > (0.25 * length(median.rank)) & median.rank < (0.75 *
-    length(median.rank))
-
+                                                                                 length(median.rank))
+  
   ## get the house-keeping genes: the nbgenes genes with the most conserved
   ## ranks, among those that fall in the interquartile range
-
+  
   hkgenes <- names(sort(expdata.nonzero.consrank[interquartile])[1:nbgenes])
-
+  
   ## compute the normalization coefficient for each sample = the median of the
   ## RPKM of the hkgenes in that sample
-
+  
   normcoeff <- apply(expdata.nonzero[hkgenes, ], 2, median, na.rm = T)
-
+  
   ## we want to bring all of the medians at the average of the medians
   ## (computed on all expressed genes)
-
+  
   ## normcoeff=normcoeff/mean(apply(expdata.nonzero,2,median))
-
+  
   normcoeff <- normcoeff/mean(normcoeff)
-
+  
   ## finally, normalize the data
-
+  
   hkgenesEnsID <- unlist(strsplit(hkgenes, "__"))[seq(1, 2 * length(hkgenes), 2)]
-
+  
   if (haveRowNames && "gene_short_name" %in% colnames(FPKMCuff)) {
     hkgenesName <- FPKMCuff$gene_short_name[match(hkgenesEnsID, FPKMCuff$gene_id)]
   } else {
     hkgenesName <- NA
   }
-
+  
   FPKMCuff.norm <- data.frame(FPKMCuff[, grep("FPKM_", colnames(FPKMCuff), invert = T)],
-    t(t(FPKMCuff[, grep("FPKM_", colnames(FPKMCuff))])/normcoeff), check.names = FALSE)
-
+                              t(t(FPKMCuff[, grep("FPKM_", colnames(FPKMCuff))])/normcoeff), check.names = FALSE)
+  
   results <- list(hkgenesName = hkgenesName, hkgenesENSID = hkgenesEnsID, normcoeff = normcoeff,
-    normData = FPKMCuff.norm)
-
+                  normData = FPKMCuff.norm)
+  
 }
 
 simplifyDF <- function(df, samples, unusedColnames = c("htseq_count_file", "cufflinks_file"),
-  keepFactorsWithOneValue = F) {
+                       keepFactorsWithOneValue = F) {
   newdf <- df
   rownames(newdf) <- newdf$sample
   colsIDToRM <- which(colnames(newdf) %in% unusedColnames)
@@ -241,7 +241,7 @@ getStringFromListAndSP <- function(listOfPara, possibleFactors, possibleValues) 
   if (length(setdiff(names(listOfPara), possibleValues)) > 0) {
     cat("The parameters ", setdiff(names(listOfPara), possibleValues), " are not usable in this plot.\n")
   }
-
+  
   return(param)
 }
 
@@ -283,12 +283,12 @@ checkedPCA2D <- function(listOfPara, samplesPlan) {
       # less than 5:
       if ("shape" %in% names(listOfPara)) {
         nbShape <- tryCatch(length(levels(samplesPlan[, listOfPara$shape])),
-          error = function(e) {
-          0
-          })
+                            error = function(e) {
+                              0
+                            })
         if (nbShape > 5) {
           cat("It is not possible to use more than 5 different shapes with both fill and color. Some shapes for ",
-          listOfPara$shape, " will be redundant.\n")
+              listOfPara$shape, " will be redundant.\n")
         }
       }
     }
@@ -322,7 +322,7 @@ stringFromNamedVec <- function(v) {
 
 stringFromListOfNamedVec <- function(l) {
   return(paste0("list(", paste0("'", names(l), "'=", sapply(l, stringFromNamedVec),
-    collapse = ","), ")"))
+                                collapse = ","), ")"))
 }
 
 getAddPara <- function(listOfPara, proposedColors) {
@@ -330,13 +330,13 @@ getAddPara <- function(listOfPara, proposedColors) {
   if ("fill" %in% names(listOfPara)) {
     if (listOfPara$fill %in% names(proposedColors)) {
       addPara <- paste0(addPara, "+\nscale_fill_manual(values=proposedColors[[\"",
-        listOfPara$fill, "\"]])")
+                        listOfPara$fill, "\"]])")
     }
   }
   if ("color" %in% names(listOfPara)) {
     if (listOfPara$color %in% names(proposedColors)) {
       addPara <- paste0(addPara, "+\nscale_color_manual(values=proposedColors[[\"",
-        listOfPara$color, "\"]])")
+                        listOfPara$color, "\"]])")
     }
   }
   return(addPara)
@@ -345,6 +345,7 @@ getAddPara <- function(listOfPara, proposedColors) {
 # Wrapper for DESeq2
 deseqAnaWithCovariates <- function(count.table, factorForAna, covariates,
                                    pathOutput, samplesPlan, LRT = FALSE, pvalT = 0.05,
+                                   fpkm.table = NULL, min.mean.FPKM = 1,
                                    lfcT = 1.5, writeRLOG = FALSE, gene_id = "gene_id", ...) {
   # Checking the conditions
   if (!(factorForAna %in% colnames(samplesPlan))) {
@@ -361,17 +362,38 @@ deseqAnaWithCovariates <- function(count.table, factorForAna, covariates,
     LRT <- TRUE
   }
   # Lauching DESeq2
-  dds <- DESeqDataSetFromMatrix(countData = count.table[, match(rownames(samplesPlan), colnames(count.table))],
+  dds <- DESeqDataSetFromMatrix(countData = count.table[, rownames(samplesPlan)],
                                 colData = samplesPlan,
                                 design = as.formula(paste0("~",
-                                  paste(c(unlist(covariates),
-                                          factorForAna),
-                                        collapse = " + ")
+                                                           paste(c(unlist(covariates),
+                                                                   factorForAna),
+                                                                 collapse = " + ")
                                 )))
   print("Design is:")
   print(design(dds))
-  print("Genes that are never expressed are removed")
-  dds <- dds[rowSums(counts(dds)) > 1, ]
+  # Filtering:
+  if (is.null(fpkm.table)) {
+    cat("Genes that are never expressed are removed.\n")
+    dds <- dds[rowSums(counts(dds)) > 1, ]
+  } else {
+    fpkm.means <- NULL
+    for (factorValue in unique(samplesPlan[, factorForAna])) {
+      current.samples <- rownames(
+        subset(samplesPlan,
+               samplesPlan[, factorForAna] == factorValue)
+      )
+      fpkm.means <- cbind(fpkm.means, rowMeans(fpkm.table[, paste0("FPKM_", current.samples)]))
+    }
+    colnames(fpkm.means) <- paste0("FPKM_mean_", unique(samplesPlan[, factorForAna]))
+    rownames(fpkm.means) <- rownames(fpkm.table)
+    fpkm.means.max <- apply(fpkm.means, 1, max)
+    genes.to.keep <- intersect(
+      names(fpkm.means.max[fpkm.means.max > min.mean.FPKM]),
+      rownames(dds)[rowSums(counts(dds)) > 1]
+    )
+    cat(paste("Genes with average FPKM per group below", min.mean.FPKM, " in all groups are removed.\n"))
+    dds <- dds[genes.to.keep, ]
+  }
   if (LRT) {
     # Here I am really not sure about the reduced
     reduced.formula <- as.formula("~1")
@@ -397,6 +419,12 @@ deseqAnaWithCovariates <- function(count.table, factorForAna, covariates,
     resOrdered,
     check.names = FALSE
   )
+  if (!is.null(fpkm.table)) {
+    resToExport <- cbind(
+      resToExport,
+      fpkm.means[rownames(resToExport), ]
+    )
+  }
   if (ncol(ann) == 1) {
     colnames(resToExport)[1] <- colnames(ann)
   }

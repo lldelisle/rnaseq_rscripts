@@ -16,9 +16,8 @@ factor <- "Line"
 
 # Optional
 # If you want to filter genes based on a minimal FPKM mean value in at least one group
-# Uncomment and update the path:
-# tableWithFPKM <- "~/rnaseq_rscripts/outputs/mergedTables/AllCufflinks_Simplified.txt"
-# min.mean.FPKM <- 1
+tableWithFPKM <- "~/rnaseq_rscripts/outputs/mergedTables/AllCufflinks_Simplified.txt"
+min.mean.FPKM <- 1
 
 # This can be table from cufflinks or cuffdiff or Biomart to annotate genes.
 # You will need to choose a file with at least one column with the Ensembl Gene IDs.
@@ -31,7 +30,7 @@ gtfFile <- "~/rnaseq_rscripts/data/mergeOverlapGenesOfFilteredTranscriptsOfMus_m
 # Default test is Wald but you can change to likelihood ratio test (LRT) with
 # reduced formula ~1. Put F to keep Wald and put T to use LRT.
 changeTest <- F
-outputDESeqTable <- "~/rnaseq_rscripts/outputs/DESeq2/DESeq2AnalysisDFLPerGeno.txt"
+outputDESeqTable <- "~/rnaseq_rscripts/outputs/DESeq2_FPKM_filter/DESeq2AnalysisDFLPerGeno.txt"
 # If you want to have another table with only significant genes abs(l2FC) > 1.5
 # and corrected p-value < 0.05
 outputSignificantTable <- T

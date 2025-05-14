@@ -64,6 +64,25 @@ if (!"Ens_ID" %in% colnames(htseqCounts)) {
 
 rownames(htseqCounts) <- htseqCounts$Ens_ID
 
+
+if (!exists("tableWithFPKM")) {
+  fpkm.table <- NULL
+} else if (!file.exists(tableWithFPKM)) {
+  stop("The file specified as tableWithFPKM:", tableWithFPKM, "does not exists.")
+} else {
+  fpkm.table <- read.delim(tableWithFPKM, check.names = FALSE)
+  if (!"gene_id" %in% colnames(fpkm.table)) {
+    stop("gene_id is not part of the column names of the FPKM table")
+  }
+  rownames(fpkm.table) <- fpkm.table$gene_id
+  if (!exists("min.mean.FPKM")) {
+    min.mean.FPKM <- 1
+  } else if (!is.numeric(min.mean.FPKM)) {
+    stop("min.mean.FPKM must be numeric.")
+  }
+}
+
+
 # The samplesplan may contain more values than the htseqCounts
 sampleNamesWithValues <- intersect(samplesPlanDF$sample, colnames(htseqCounts))
 if (length(sampleNamesWithValues) < 2) {
@@ -154,7 +173,8 @@ for (factorToStudy in names(all.analyses)) {
           LRT = FALSE,
           lfcT = log2FC.threshold,
           writeRLOG = FALSE,
-          gene_id = "Ens_ID"
+          gene_id = "Ens_ID",
+          fpkm.table = fpkm.table, min.mean.FPKM = min.mean.FPKM
         )
         # theta = c(0.15, 0.99))
       } else {
