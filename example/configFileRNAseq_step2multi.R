@@ -68,6 +68,13 @@ all.analyses <- list(
 
 
 # Optional
+# If you want to add covariate like library type, experimental batch etc...
+# The names must match columns of the samples plan
+# Uncomment:
+# covariates <- list("covariate1", "covariate2")
+# For example:
+# covariates <- list("Replicate")
+
 # If you want to filter genes based on a minimal FPKM mean value in at least one group
 # Uncomment and update the path:
 # tableWithFPKM <- "~/rnaseq_rscripts/outputs/mergedTables/AllCufflinks_Simplified.txt"

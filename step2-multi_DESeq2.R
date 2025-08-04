@@ -113,6 +113,11 @@ samples.plan.df <- simplifyDF(samplesPlanDF, sampleNamesWithValues)
 
 big.table.fn.long <- "summary_long.txt"
 
+# Initiate covariates
+if (!exists("covariates")) {
+  covariates <- NULL
+}
+
 ### DESEQ2 ANALYSIS ###
 
 # Prepare a big table with the results of all DESeq2
@@ -167,7 +172,7 @@ for (factorToStudy in names(all.analyses)) {
       # Run or read DESeq2 results with Wald test threshold of FC at 1.5
       if (!file.exists(file.path(pathForDESeq2, paste0(base.filename, "DESeq2significant.txt")))) {
         print(new.samples.plan)
-        deseqAnaWithCovariates(htseqCounts, factorToStudy, NULL,
+        deseqAnaWithCovariates(htseqCounts, factorToStudy, covariates,
           file.path(pathForDESeq2, base.filename),
           new.samples.plan,
           LRT = FALSE,
