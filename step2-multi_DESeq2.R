@@ -201,7 +201,8 @@ for (factorToStudy in names(all.analyses)) {
       all.res.fmt <- subset(
         all.res,
         select = intersect(
-          c("Ens_ID", "gene_short_name", "baseMean", "log2FoldChange", "padj"),
+          c("Ens_ID", "gene_short_name", "baseMean",
+            "log2FoldChange", "pvalue", "padj"),
           colnames(all.res)
         )
       )
