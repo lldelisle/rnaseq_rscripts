@@ -3,7 +3,7 @@
 ## Inputs
 ### From fastq to counts/FPKM
 You just got your RNAseq samples sequenced, you have your fastq.
-I recommand you to map them with STAR with our custom gtf from Ensembl (see repository toolboxForMutantAndWTGenomes) and getting the gene count from it. You can also use cufflinks to generate FPKM.
+I recommend you to map them with STAR with our custom gtf from Ensembl (see repository toolboxForMutantAndWTGenomes) and getting the gene count from it. You can also use cufflinks to generate FPKM.
 You should have one count file per sample and one FPKM file per sample.
 
 For Duboule lab members, use last workflow in galaxy with STAR.
@@ -16,7 +16,7 @@ For Duboule lab members, use last workflow in galaxy with STAR.
 The samplesplan is a tabulated file which have one line per sample and have multiple information that can be used for plots and analysis.
 
 The simplest samplesplan has only one column: one with the samples names called 'sample'.
-If you want to do a differencial analysis, you need another one with the name of the group on which you want to do the differential analysis.
+If you want to do a differential analysis, you need another one with the name of the group on which you want to do the differential analysis.
 
 You can add in this samplesplan multiple information that you can then use to annotate your samples on plots.
 
@@ -43,10 +43,10 @@ The first script has 4 parts:
 - Normalize this table with a median scaling procedure method (see [Brawand, et al 2011](https://doi.org/10.1038/nature10532)). As this method was introduced to us by Anouk, we also call it AnoukMethod.
 
 ### Prepare the config file
-I highly recommand to use the template configFileRNAseq_step1.R in the example folder.
+I highly recommend to use the template configFileRNAseq_step1.R in the example folder.
 - RNAseqFunctionPath: put the path for the script `RNAseqFunctions.R`
 - samplesPlan: put the path for the samples plan file which correspond to your experiment.
-- (optionnal) outputFolderForStep1: the folder where the merged tables will be (if not provided, the folder of the samples plan is used).
+- (optional) outputFolderForStep1: the folder where the merged tables will be (if not provided, the folder of the samples plan is used).
 - mergeCounts: put T if you want to merge the counts.
 - subsetCounts: put T if you want to remove from the merged table of counts some genes. Then you will need:
     - genesToRmFromCounts: the path for the list of ensembl ID of genes you want to exclude from the table. If you want to remove genes from a whole chromosome, you can use the script getGeneListFromChrAndGTF.R available in the [toolBoxForMutantAndWTGenomes repository](https://github.com/lldelisle/toolBoxForMutantAndWTGenomes).
@@ -77,7 +77,7 @@ When you see back the `>` symbol. This means it is done.
 The second script do the differential analysis with DESeq2.
 
 ### Prepare the config file
-I highly recommand to use the template configFileRNAseq_step2_DFL.R in the example folder.
+I highly recommend to use the template configFileRNAseq_step2_DFL.R in the example folder.
 - RNAseqFunctionPath: put the path for the script `RNAseqFunctions.R`
 - samplesPlan: put the path for the samples plan file which correspond to your experiment (which can be smaller than the original samplesPlan).
 - tableWithCounts: put the path for the table with all counts (one column per sample called by the name of the sample and a column for gene identification). You can use AllHTSeqCounts.txt or AllHTSeqCounts_subset.txt if you want to exclude some genes/chr from analysis.
@@ -113,7 +113,7 @@ In the output table you have:
 - The baseMean which is the mean expression over all samples
 - The log2 fold change
 - The log2 fold change Standard Error
-- The stat value indiquate how far the difference of expression between the two groups is from the variability of this expression (in the Wald test). This value is used to calculate the p-value.
+- The stat value indicate how far the difference of expression between the two groups is from the variability of this expression (in the Wald test). This value is used to calculate the p-value.
 - The p-value
 - The p-value adjusted for multiple tests with the Benjamini \& Hochberg method.
  
@@ -124,12 +124,12 @@ It is ordered by increasing adjusted p-value.
 This variation of the second script do the differential analysis with DESeq2 for multiple pairwise comparisons in a single script.
 
 ### Prepare the config file
-I highly recommand to use the template configFileRNAseq_step2multi.R in the example folder.
+I highly recommend to use the template configFileRNAseq_step2multi.R in the example folder.
 - RNAseqFunctionPath: put the path for the script `RNAseqFunctions.R`
 - samplesPlan: put the path for the samples plan file which correspond to your experiment (which can be smaller than the original samplesPlan). At this step it is super important to put the samples reference for your comparison before the others.
 - tableWithCounts: put the path for the table with all counts (one column per sample called by the name of the sample and a column for gene identification). You can use AllHTSeqCounts.txt or AllHTSeqCounts_subset.txt if you want to exclude some genes/chr from analysis. You can also use [this script](https://github.com/lldelisle/toolBoxForMutantAndWTGenomes/blob/main/scripts/subsetForProteinCoding.R) if you want to compute DESeq2 only on protein coding genes.
 - geneIDColCounts: If the table was not provided by step1. Put here the name of the column for gene identification.
-- all.analyses: this describes all pairwise analyses you want to do. I recommand to check the template configFile to see examples.
+- all.analyses: this describes all pairwise analyses you want to do. I recommend to check the template configFile to see examples.
 - covariates: A list containing all covariates you want to use for the DESeq2 analysis (useful when you know you have batch effect).
 - pathForDESeq2: put the path of the directory where you want to have the output files of the script.
 - log2FC.threshold: The threshold to consider a gene as significant (appear into a separate table and be TRUE or FALSE into the final tables).
@@ -162,10 +162,10 @@ The outputs are:
 
 ## step3
 ### Goal
-The third script do three plots: PCA, Clustering and gene expession.
+The third script do three plots: PCA, Clustering and gene expression.
 
 ### Prepare the config file
-I highly recommand to use the template configFileRNAseq_step3.R in the example folder.
+I highly recommend to use the template configFileRNAseq_step3.R in the example folder.
 
 - RNAseqFunctionPath: put the path for the last version of the script RNAseqFunctions
 - samplesPlan: put the path for the samples plan file which correspond to your experiment
@@ -186,8 +186,8 @@ I highly recommand to use the template configFileRNAseq_step3.R in the example f
     - geneIDToAdd: By default, the title of the plot is the id provided in the fileWithGenes but you can add a meaning full name like gene_short_name if it is provided in the tableWithNormalizedExpression.
     - useLogExpression: By default, the values of expression plotted are log2(1+expression) (when T, if F the raw expression will be plotted.)
     - useSameYmaxForAllGenes: By default, each gene is plotted on an adjusted scale. If useSameYmaxForAllGenes is T, all genes will be plotted with the same y axis.
-    - xaxisForGenes: By default, each sample is plotted on a seperate x but you can group them using one of the column of your samples plan. Put here the name of the column to use.
-    - plotGenesPara: Put here a list like for PCA2D. More explainations in the configFile.
+    - xaxisForGenes: By default, each sample is plotted on a separate x but you can group them using one of the column of your samples plan. Put here the name of the column to use.
+    - plotGenesPara: Put here a list like for PCA2D. More explanations in the configFile.
     - doNotPlotGeneByGene: If you do not want to have one plot per gene but just the heatmap put it to T.
     - addGlobalHeatmap: If you want to have a global heatmap with the genes provided in the list (the annotation used are XaxisForGenes and the one used in plotGenesPara).
     - keepGeneOrder: By default, genes are clustered by euclidean distance and complete clustering. If you want to keep the original order. Put keepGeneOrder to T.
@@ -214,12 +214,12 @@ You can open this new file in RStudio and modify it as you wish especially for g
 The fourth script do two plots: Volcano and MAP.
 
 ### Prepare the config file
-I highly recommand to use the template configFileRNAseq_step4DFL_hoxdAndaround.R in the example folder.
+I highly recommend to use the template configFileRNAseq_step4DFL_hoxdAndaround.R in the example folder.
 - RNAseqFunctionPath: put the path for the last version of the script RNAseqFunctions
 - tableWithResultsOfDifferentialExpression: put the path for the table with results of DESeq2 or any table with at least 2 columns (padj and log2FoldChange) for Volcano and 3 columns (padj, log2FoldChange and baseMean) for MAP.
 - outputFolder: put the path of the folder in which should be put the plots and the tables.
 - usePng: the possible output formats are pdf (put F) or png (put T).
-- maxPAdj: Put the maximum value of ajusted p-value to be significant (default 0.05)
+- maxPAdj: Put the maximum value of adjusted p-value to be significant (default 0.05)
 - minLFC: Put the minimum log2 fold change to be significant (default 1.5)
 - colOfNonSignificant: Put here the color you want for points which are not significant. The list of colors with names is available [here](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf).
 - colOfSignificant: Put here the color you want for points which are significant.
@@ -231,7 +231,7 @@ I highly recommand to use the template configFileRNAseq_step4DFL_hoxdAndaround.R
 - For Volcano:
     - maxYVolcano: If you want to zoom on bigger p-values because you have some genes with very low p-values, you can put here a value to restrict the plot to p-values higher than $10^{-maxYVolcano}$. Put NA or comment line if you do not need to zoom the initial plot.
 - For MAP:
-    - ylimMAP: If you want to zoom on smaller log2 fold changes because you have some genes with very high log2 fold changes, you can put here minimum and maxiumum log2 fold change values to restrict the plot to these values. Put NA or comment line if you do not need to zoom the initial plot, put c(minValue,maxValue) if you want to restrict.
+    - ylimMAP: If you want to zoom on smaller log2 fold changes because you have some genes with very high log2 fold changes, you can put here minimum and maximum log2 fold change values to restrict the plot to these values. Put NA or comment line if you do not need to zoom the initial plot, put c(minValue,maxValue) if you want to restrict.
 
 ### Launch it
 Either you use command line (but you cannot click on the graphs):
